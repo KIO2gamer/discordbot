@@ -16,7 +16,10 @@ module.exports = {
 			option.setName('role').setDescription('The role to edit').setRequired(true)
 		)
 		.addStringOption(option =>
-			option.setName('file').setDescription('Which file you want to store role data into?').setRequired(true)
+			option
+				.setName('file')
+				.setDescription('Which file you want to store role data into?')
+				.setRequired(true)
 				.addChoices(
 					{ name: 'Level Roles', value: './assets/json/levelRoles.json' },
 					{ name: 'Other Roles', value: './assets/json/roles.json' }
