@@ -1,3 +1,14 @@
+/**
+ * Provides a command that displays a list of all available commands or provides detailed information about a specific command.
+ *
+ * The command is registered as a slash command in Discord and can be used by users to get help with the bot's commands.
+ *
+ * When the command is executed without any arguments, it displays a paginated list of all available commands, showing the command name and description for each command.
+ *
+ * When the command is executed with a command name as an argument, it displays detailed information about that specific command, including the command usage and any provided examples.
+ *
+ * The command uses Discord.js features like embeds and buttons to provide a user-friendly help interface.
+ */
 const {
 	SlashCommandBuilder,
 	EmbedBuilder,
