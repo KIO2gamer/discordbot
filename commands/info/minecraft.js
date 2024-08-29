@@ -1,3 +1,10 @@
+/**
+ * Retrieves information about a Minecraft player, including their username, UUID, and skin.
+ *
+ * @param {string} username - The Minecraft username to look up.
+ * @returns {Promise<void>} - Resolves when the player information has been sent as an embed message.
+ */
+
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 const NodeCache = require('node-cache');

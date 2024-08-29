@@ -1,3 +1,10 @@
+/**
+ * Fetches and displays the current weather for a given city using the WeatherAPI.
+ * Information includes temperature, feels like temperature, humidity, wind, pressure, UV index, and more.
+ *
+ * @param {string} city - The city to get the weather for.
+ * @returns {Promise<void>} - Resolves when the weather information has been displayed.
+ */
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');

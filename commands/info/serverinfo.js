@@ -1,3 +1,9 @@
+/**
+ * Sends an information embed with details about the current Discord server, including its name, owner, creation date, member count, channels, roles, emojis, and more.
+ *
+ * @param {import('discord.js').CommandInteraction} interaction - The command interaction that triggered this function.
+ * @returns {Promise<void>} - A Promise that resolves when the server information embed has been sent.
+ */
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {

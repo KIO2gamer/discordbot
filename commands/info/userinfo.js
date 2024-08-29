@@ -1,3 +1,9 @@
+/**
+ * Displays information about a user, either the user who executed the command or a specified user. This includes their username, ID, roles, join date, status, activity, and more.
+ *
+ * @param {import('discord.js').Interaction} interaction - The interaction object for the slash command.
+ * @returns {Promise<void>} - Resolves when the user information is sent as an embed.
+ */
 const { SlashCommandBuilder, EmbedBuilder, ActivityType } = require('discord.js');
 
 module.exports = {

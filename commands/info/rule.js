@@ -1,3 +1,9 @@
+/**
+ * Displays a specific rule from the server's rules list. The number of the rule to be displayed is specified as an argument.
+ *
+ * @param {import('discord.js').CommandInteraction} interaction - The Discord interaction object.
+ * @returns {Promise<void>} - A Promise that resolves when the rule is displayed.
+ */
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {

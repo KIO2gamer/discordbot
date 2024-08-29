@@ -1,3 +1,10 @@
+/**
+ * Provides a slash command that displays various statistics about the server, including member count, channels, messages sent, reactions given, and more, within a specified timeframe or for the server's entire history.
+ *
+ * @module commands/info/serverstats
+ * @param {string} [timeframe='all'] - The timeframe to calculate stats for (e.g., "7d", "1M"). Defaults to all-time.
+ * @returns {Promise<void>} - Resolves when the command has finished executing and the server stats have been displayed.
+ */
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 

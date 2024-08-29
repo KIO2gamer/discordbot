@@ -1,3 +1,11 @@
+/**
+ * Displays statistics on reactions used in a specific channel or across the entire server. It shows the top 5 most used reactions and the top 5 users who react the most, within a specified timeframe or for the entire server history.
+ *
+ * @param {import('discord.js').CommandInteraction} interaction - The Discord interaction object.
+ * @param {import('discord.js').Channel} [channel] - The channel to get reaction stats from (optional).
+ * @param {string} [timeframe] - The timeframe to get stats for (e.g., "24h", "7d", "1M").
+ * @returns {Promise<void>} - Resolves when the command has been executed.
+ */
 const { SlashCommandBuilder, EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const moment = require('moment');
 
