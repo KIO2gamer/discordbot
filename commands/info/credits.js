@@ -1,3 +1,12 @@
+/**
+ * Provides an embed that displays a list of contributors who helped create the bot, with their Discord usernames linked to their IDs.
+ *
+ * @module commands/info/credits
+ * @description Shows an embed acknowledging and listing the contributors who helped create the bot, linking their Discord usernames to their IDs.
+ * @usage /credits
+ * @example /credits
+ */
+
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
