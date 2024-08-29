@@ -1,3 +1,12 @@
+/**
+ * This is the main entry point for the Discord bot application. It sets up the necessary dependencies, loads commands and events, connects to MongoDB, deploys commands, and logs the bot into Discord.
+ *
+ * The application uses the discord.js library to interact with the Discord API, and the mongoose library to connect to a MongoDB database.
+ *
+ * The application loads all commands from the 'commands' directory and all events from the 'events' directory. It also deploys the commands to the specified Discord guilds or globally.
+ *
+ * The application also includes a graceful shutdown process that disconnects from MongoDB and destroys the Discord client when the process is interrupted (SIGINT).
+ */
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();

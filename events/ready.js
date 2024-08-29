@@ -1,3 +1,8 @@
+/**
+ * Handles the ready event for the Discord client.
+ * This event is emitted when the client is ready and fully initialized.
+ * It sets the client's presence status and logs the number of servers the client is connected to.
+ */
 const { Events, ActivityType } = require('discord.js');
 const fs = require('fs');
 
