@@ -1,3 +1,10 @@
+/**
+ * Fetches the current answers/votes for a poll from a specific message.
+ *
+ * @param {string} messageId - The ID of the message containing the poll.
+ * @param {Channel} channel - The channel where the poll is created.
+ * @returns {Promise<void>} - Replies with the poll question and the answers with their respective vote counts.
+ */
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -24,25 +31,26 @@ module.exports = {
 
 			// Fetch the message
 			const message = await channel.messages.fetch(messageId);
-			if (!message || !message.poll) {
-				return interaction.reply('Poll not found or message does not contain a poll.');
+			if (!message.poll || !Array.isArray(message.poll.answers)) {
+				return interaction.reply('This message does not contain a valid poll.');
 			}
 
 			// Prepare the header
-			let reply = `**Question:** \`${message.poll.question.text}\`\n\n\`\`\`\nS.No.  Options           Votes\n`;
+			let reply = ['**Question:** `' + message.poll.question.text + '`\n'];
+			reply.push('\nS.No.  Options           Votes');
 
 			// Add each answer in a formatted way
 			message.poll.answers.forEach((answer, index) => {
-				const numberText = `${index}`.padEnd(6);
-				const optionText = `${answer.text}`.padEnd(17);
+				const numberText = `${index + 1}`.padEnd(6);
+				const optionText = `${answer.text}`.substring(0, 15).padEnd(17);
 				const voteText = `${answer.voteCount}`.padStart(5);
-				reply += `${numberText} ${optionText} ${voteText}\n`;
+				reply.push(`${numberText} ${optionText} ${voteText}`);
 			});
 
 			// Close the code block
-			reply += '```';
+			reply.push('');
 
-			await interaction.reply(reply);
+			await interaction.reply(reply.join('\n'));
 		} catch (error) {
 			console.error(error);
 			await interaction.reply('An error occurred while fetching the poll answers.');

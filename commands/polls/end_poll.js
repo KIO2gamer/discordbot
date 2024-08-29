@@ -1,3 +1,10 @@
+/**
+ * Ends a poll from a specific message, preventing further voting.
+ *
+ * @param {string} messageId - The ID of the message containing the poll to end.
+ * @param {Channel} channel - The channel where the poll was created.
+ * @returns {Promise<void>} - A promise that resolves when the poll has been ended successfully.
+ */
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -24,8 +31,8 @@ module.exports = {
 
 			// Fetch the message
 			const message = await channel.messages.fetch(messageId);
-			if (!message || !message.poll) {
-				return interaction.reply('Poll not found or message does not contain a poll.');
+			if (!message.poll || typeof message.poll.end !== 'function') {
+				return interaction.reply('This message does not contain an active poll that can be ended.');
 			}
 
 			// End the poll
