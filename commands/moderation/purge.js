@@ -5,49 +5,56 @@ const MAX_PURGE_PER_REQUEST = 100; // Max messages per bulkDelete
 const PURGE_COOLDOWN_MS = 5000; // Cooldown in milliseconds
 
 module.exports = {
-	description_full: 'Prunes (deletes) messages from the specified user within the last 14 days.',
-	usage: '/purge user:@user amount:number',
-	examples: ['/purge user:@user123 amount:10', '/purge user:@user456 amount:50'],
+	description_full: 'Prunes (deletes) messages from the channel within the last 14 days.',
+	usage: '/purge [user:@user] [amount:number] [reason:"reason"]',
+	examples: [
+		'/purge',
+		'/purge amount:50',
+		'/purge user:@user123 amount:25',
+		'/purge reason:"Cleaning up spam"',
+		'/purge user:@user123 amount:10 reason:"Removing inappropriate messages"'
+	],
 	data: new SlashCommandBuilder()
 		.setName('purge')
-		.setDescription('Prune messages from a user (max 100 messages within 14 days)')
+		.setDescription('Purge messages (max 100 messages within 14 days)')
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 		.addUserOption(option =>
 			option
 				.setName('user')
-				.setDescription('The user to prune messages from')
-				.setRequired(true)
+				.setDescription('The user to prune messages from (optional)')
 		)
 		.addIntegerOption(option =>
 			option
 				.setName('amount')
-				.setDescription('The number of messages to prune (max 100)')
-				.setRequired(true)
+				.setDescription('The number of messages to prune (max 100, optional)')
 				.setMinValue(1)
 				.setMaxValue(100)
+		)
+		.addStringOption(option =>
+			option
+				.setName('reason')
+				.setDescription('The reason for purging the messages (optional)')
 		),
 
 	async execute(interaction) {
 		const user = interaction.options.getUser('user');
-		let amount = interaction.options.getInteger('amount');
+		let amount = interaction.options.getInteger('amount') || 100; // Default to 100 if not provided
+		const reason = interaction.options.getString('reason') || 'No reason provided';
 
-		// Immediately defer the reply to acknowledge the interaction
 		await interaction.deferReply({ ephemeral: true }).catch(console.error);
 
 		try {
-			// Limit amount to the maximum allowed by Discord
 			amount = Math.min(amount, MAX_PURGE_PER_REQUEST);
 
-			// Calculate the timestamp for 14 days ago
 			const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
 
-			const messagesToDelete = [];
+			let messagesToDelete = [];
 			let lastMessageId;
 
-			// Fetch messages in batches until 'amount' is reached or no more messages
+			// Fetch messages until enough are found or the limit is reached
 			while (messagesToDelete.length < amount) {
 				const fetchedMessages = await interaction.channel.messages.fetch({
-					limit: MAX_PURGE_PER_REQUEST,
+					limit: amount - messagesToDelete.length, // Fetch only the remaining amount
 					...(lastMessageId && { before: lastMessageId }),
 				});
 
@@ -55,33 +62,37 @@ module.exports = {
 
 				lastMessageId = fetchedMessages.last().id;
 
-				messagesToDelete.push(
-					...fetchedMessages.filter(
+				// Apply filter if user is specified
+				const filteredMessages = user
+					? fetchedMessages.filter(
 						msg => msg.author.id === user.id && msg.createdTimestamp > twoWeeksAgo
 					)
-				);
+					: fetchedMessages.filter(msg => msg.createdTimestamp > twoWeeksAgo);
+
+				messagesToDelete = messagesToDelete.concat(filteredMessages.toJSON()); 
+
+				// Stop fetching if enough messages are found
+				if (messagesToDelete.length >= amount) break;
 			}
 
-			// Delete messages if any are found
-			if (messagesToDelete.length > 0) {
-				const deletedCount = (
-					await interaction.channel.bulkDelete(messagesToDelete.slice(0, amount), true)
-				).size;
+			const deletedCount = messagesToDelete.length; // Get the final count
+			
+			// Delete messages in batches to avoid hitting rate limits
+			while (messagesToDelete.length > 0) {
+				const batch = messagesToDelete.splice(0, MAX_PURGE_PER_REQUEST);
+				await interaction.channel.bulkDelete(batch, true);
 
-				const embed = new EmbedBuilder()
-					.setColor('#00ff00')
-					.setTitle('Purge Successful')
-					.setDescription(`Pruned ${deletedCount} messages from ${user}`);
-
-				await interaction.editReply({ embeds: [embed] });
-			} else {
-				return interaction.editReply({
-					content: `No messages found from ${user.username} within the last 14 days.`,
-				});
+				// Optional rate limit handling
+				await new Promise(resolve => setTimeout(resolve, PURGE_COOLDOWN_MS));
 			}
 
-			// Optional: Implement rate limit handling (adjust cooldown as needed)
-			await new Promise(resolve => setTimeout(resolve, PURGE_COOLDOWN_MS));
+			const embed = new EmbedBuilder()
+				.setColor('#00ff00')
+				.setTitle('Purge Successful')
+				.setDescription(`Pruned ${deletedCount} messages from ${user ? user : 'the channel'}. Reason: ${reason}`);
+
+			await interaction.editReply({ embeds: [embed] });
+
 		} catch (error) {
 			console.error('Failed to prune messages:', error);
 
@@ -89,7 +100,7 @@ module.exports = {
 				.setColor('#ff0000')
 				.setTitle('Purge Failed')
 				.setDescription(
-					`Failed to prune messages from ${user}\nError: \`${error.message}\``
+					`Failed to prune messages. Error: \`${error.message}\``
 				);
 
 			interaction.editReply({ embeds: [embed] }).catch(console.error);
