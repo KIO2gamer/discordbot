@@ -31,7 +31,7 @@ module.exports = {
 
 			// Fetch the message
 			const message = await channel.messages.fetch(messageId);
-			if (!message.poll || typeof message.poll.end !== 'function') {
+			if (!message.poll) {
 				return interaction.reply('This message does not contain an active poll that can be ended.');
 			}
 

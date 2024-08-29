@@ -95,14 +95,8 @@ module.exports = {
 
 			const durationMinutes = Math.min(durationHours * 60, MAX_POLL_DURATION_MINUTES);
 
-			const pollEmbed = new EmbedBuilder().setColor(0x0099ff).setTitle(question);
-
-			options.forEach((option, index) => {
-				pollEmbed.addFields({ name: `Option ${index + 1}`, value: option, inline: true });
-			});
 			try {
 				await interaction.reply({
-					embeds: [pollEmbed],
 					poll: {
 						question: { text: question },
 						answers: options.map(option => ({ text: option })),

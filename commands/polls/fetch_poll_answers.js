@@ -1,11 +1,4 @@
-/**
- * Fetches the current answers/votes for a poll from a specific message.
- *
- * @param {string} messageId - The ID of the message containing the poll.
- * @param {Channel} channel - The channel where the poll is created.
- * @returns {Promise<void>} - Replies with the poll question and the answers with their respective vote counts.
- */
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
 	description_full: 'Fetches the current answers/votes for a poll from a specific message.',
@@ -29,31 +22,50 @@ module.exports = {
 			const messageId = interaction.options.getString('message_id');
 			const channel = interaction.options.getChannel('channel');
 
-			// Fetch the message
 			const message = await channel.messages.fetch(messageId);
-			if (!message.poll || !Array.isArray(message.poll.answers)) {
-				return interaction.reply('This message does not contain a valid poll.');
+			if (!message.poll) {
+				return interaction.reply({
+					content: 'This message does not contain a valid poll.',
+					ephemeral: true, // Only the user can see this
+				});
 			}
 
-			// Prepare the header
-			let reply = ['**Question:** `' + message.poll.question.text + '`\n'];
-			reply.push('\nS.No.  Options           Votes');
+			const totalVotes = message.poll.answers.reduce(
+				(sum, answer) => sum + answer.voteCount,
+				0
+			); 
+			
+			// Create an Embed for better presentation
+			const pollEmbed = new EmbedBuilder()
+				.setTitle(`Poll Results: ${message.poll.question.text}`)
+				.setColor('#0099ff')
+				.setTimestamp(message.createdAt);
 
-			// Add each answer in a formatted way
-			message.poll.answers.forEach((answer, index) => {
-				const numberText = `${index + 1}`.padEnd(6);
-				const optionText = `${answer.text}`.substring(0, 15).padEnd(17);
-				const voteText = `${answer.voteCount}`.padStart(5);
-				reply.push(`${numberText} ${optionText} ${voteText}`);
+			message.poll.answers.forEach(answer => {
+				const percentage = totalVotes > 0 ? (answer.voteCount / totalVotes) * 100 : 0;
+				// Dynamically calculate bar length (adjust max characters as needed)
+				const barLength = Math.round((percentage / 100) * 20); // 20 character bar
+				const bar = '█'.repeat(barLength).padEnd(20, ' ');
+
+				pollEmbed.addFields({
+					name: answer.text,
+					value: `\`${answer.voteCount} votes\` (${percentage.toFixed(1)}%) ${bar}`,
+					inline: false, // Display each option on a new line
+				});
 			});
 
-			// Close the code block
-			reply.push('');
+			pollEmbed.setFooter({
+				text: `Total Votes: ${totalVotes}`,
+			});
 
-			await interaction.reply(reply.join('\n'));
+			await interaction.reply({ embeds: [pollEmbed] });
 		} catch (error) {
-			console.error(error);
-			await interaction.reply('An error occurred while fetching the poll answers.');
+			console.error('Error fetching poll answers:', error);
+			await interaction.reply({
+				content:
+					'An error occurred while fetching the poll answers. Please check the message ID and channel.',
+				ephemeral: true,
+			});
 		}
 	},
 };
