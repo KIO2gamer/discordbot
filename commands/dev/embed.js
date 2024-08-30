@@ -47,17 +47,6 @@ module.exports = {
 				// Handle sending single embeds
 				const filePath = `${folderPath}/${embedName}.json`;
 
-				if (!fs.existsSync(filePath)) {
-					return interaction.reply({
-						content: `Embed "${embedName}" not found.`,
-						ephemeral: true,
-					});
-				}
-
-				const data = fs.readFileSync(filePath);
-				const embedData = JSON.parse(data);
-				const embed = EmbedBuilder.from(embedData);
-
 				await interaction.channel.send({ embeds: [embed] });
 			}
 		} catch (error) {
