@@ -1,4 +1,7 @@
+# env
 .env
+# i dont think this needs to be ignored.
+# you can edit this out in the PR
+# .prettierrc
 node_modules
 assets/
-generative-ai-docs/

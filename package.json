@@ -1,40 +1,49 @@
 {
-	"name": "nodejs",
-	"version": "1.0.0",
-	"main": "index.js",
-	"scripts": {
-		"test": "index-workflow.js"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"nodemonConfig": {
-		"ignore": [
-			"assets/"
-		]
-	},
-	"dependencies": {
-		"@giphy/react-native-sdk": "^3.2.6",
-		"@google/generative-ai": "^0.1.3",
-		"@iamtraction/google-translate": "^2.0.1",
-		"@types/node": "^18.0.6",
-		"axios": "^1.6.2",
-		"cheerio": "^1.0.0-rc.12",
-		"discord.js": "^14.15.3",
-		"dotenv": "^16.3.1",
-		"genius-api": "^0.0.2",
-		"he": "^1.2.0",
-		"moment": "^2.30.1",
-		"mongoose": "^8.0.3",
-		"ms": "^2.1.3",
-		"node-cache": "^5.1.2",
-		"node-fetch": "^3.3.2",
-		"nodemon": "^3.1.3",
-		"pexels": "^1.4.0",
-		"translate": "^3.0.0"
-	},
-	"devDependencies": {
-		"prettier": "3.2.5"
-	},
-	"description": ""
+  "name": "Discord Bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "test-settings.js"
+  },
+  "keywords": [
+    "discord"
+  ],
+  "author": "KIO2gamer (https://kio2gamer.carrd.co/)",
+  "contributors": [
+    {
+      "name": "Neon",
+      "email": "neon@saahild.com",
+      "url": "https://saahild.com"
+    }
+  ],
+  "license": "ISC",
+  "nodemonConfig": {
+    "ignore": [
+      "assets/"
+    ]
+  },
+  "dependencies": {
+    "@giphy/react-native-sdk": "^3.2.6",
+    "@google/generative-ai": "^0.1.3",
+    "@iamtraction/google-translate": "^2.0.1",
+    "@types/node": "^18.0.6",
+    "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.3.1",
+    "genius-api": "^0.0.2",
+    "he": "^1.2.0",
+    "moment": "^2.30.1",
+    "mongoose": "^8.0.3",
+    "ms": "^2.1.3",
+    "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.1.3",
+    "pexels": "^1.4.0",
+    "translate": "^3.0.0"
+  },
+  "devDependencies": {
+    "prettier": "3.2.5"
+  },
+  "description": "A discord bot"
 }
