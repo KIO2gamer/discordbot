@@ -1,5 +1,4 @@
 .env
-.prettierrc
 node_modules
 assets/
 generative-ai-docs/
