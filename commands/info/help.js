@@ -9,6 +9,7 @@ const {
 const fs = require('fs')
 const path = require('path')
 
+// Define the structure and options for the /help command
 const commandData = new SlashCommandBuilder()
     .setName('help')
     .setDescription('Displays all commands or info about a specific command')
@@ -26,10 +27,12 @@ const commandData = new SlashCommandBuilder()
     )
 
 module.exports = {
-    data: commandData,
+    data: commandData, // Export the command data
     async execute(interaction) {
+        // Defer the reply to allow more time for processing
         await interaction.deferReply()
 
+        // Get the guild and command options
         const { guild } = interaction
         const commandName = interaction.options
             .getString('command')
@@ -38,24 +41,30 @@ module.exports = {
             .getString('search')
             ?.toLowerCase()
 
+        // Get commands organized by category and all commands
         const commandsByCategory = await getCommandsByCategory(guild)
         const allCommands = Array.from(commandsByCategory.values()).flat()
 
+        // Define a standard footer for embeds
         const embedFooter = {
             text: `Requested by ${interaction.user.tag}`,
             iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         }
 
+        // Handle specific command information request
         if (commandName) {
-            const command = allCommands.find((cmd) => cmd.name === commandName)
+            const command = allCommands.find(
+                (cmd) => cmd.name === commandName
+            )
 
             if (!command) {
                 return await interaction.editReply({
                     content: `No command found with the name "${commandName}"`,
-                    ephemeral: true,
+                    ephemeral: true, // Only visible to the user
                 })
             }
 
+            // Create fields for usage and examples
             const usageField = {
                 name: 'Usage:',
                 value: command.usage
@@ -71,27 +80,30 @@ module.exports = {
                 inline: false,
             }
 
+            // Create the command information embed
             const commandInfoEmbed = new EmbedBuilder()
                 .setColor('#2ecc71')
                 .setTitle(`❓ Command Details: /${command.name}`)
                 .setDescription(
-                    truncateDescription(
-                        command.description_full ||
-                            command.description ||
-                            'No detailed description available.'
-                    )
+                    command.description_full ||
+                        command.description ||
+                        'No detailed description available.'
                 )
                 .addFields(usageField)
                 .setTimestamp()
                 .setFooter(embedFooter)
 
+            // Add examples field if it's different from usage
             if (usageField.value !== examplesField.value) {
                 commandInfoEmbed.addFields(examplesField)
             }
 
-            return await interaction.editReply({ embeds: [commandInfoEmbed] })
+            return await interaction.editReply({
+                embeds: [commandInfoEmbed],
+            })
         }
 
+        // Handle command search request
         if (searchQuery) {
             const searchResults = getSearchResults(
                 commandsByCategory,
@@ -105,6 +117,7 @@ module.exports = {
                 })
             }
 
+            // Create an embed for search results
             const searchEmbed = createCommandListEmbed(
                 searchResults,
                 `🔍 Search Results for "${searchQuery}"`,
@@ -114,7 +127,9 @@ module.exports = {
             return await interaction.editReply({ embeds: [searchEmbed] })
         }
 
+        // Handle default help (list all commands)
         try {
+            // Create the command list embed
             const commandListEmbed = new EmbedBuilder()
                 .setColor('#2ecc71')
                 .setTitle('📃 Kiyo Bot Commands')
@@ -124,16 +139,19 @@ module.exports = {
                 .setTimestamp()
                 .setFooter(embedFooter)
 
+            // Add commands to the embed, categorized
             for (const [category, commands] of commandsByCategory.entries()) {
                 let fieldValue = ''
 
+                // Sort commands alphabetically within each category
                 const sortedCommands = commands.sort((a, b) =>
                     a.name.localeCompare(b.name)
-                ) // Sort commands alphabetically
+                )
 
                 sortedCommands.forEach((cmd) => {
-                    const cmdStr = `</${cmd.name}:${cmd.id}> - ${truncateDescription(cmd.description)}\n`
+                    const cmdStr = `</${cmd.name}:${cmd.id}> - ${cmd.description}\n`
 
+                    // Add command to field value, create new field if needed
                     if (fieldValue.length + cmdStr.length <= 1024) {
                         fieldValue += cmdStr
                     } else {
@@ -146,6 +164,7 @@ module.exports = {
                     }
                 })
 
+                // Add the last field for the category
                 if (fieldValue.length > 0) {
                     commandListEmbed.addFields({
                         name: `**${category}**`,
@@ -155,6 +174,7 @@ module.exports = {
                 }
             }
 
+            // Create the main menu embed with a button
             const mainMenuEmbed = new EmbedBuilder()
                 .setColor('#2ecc71')
                 .setTitle('Welcome to Kiyo Bot Help 👋')
@@ -165,6 +185,7 @@ module.exports = {
                 .setTimestamp()
                 .setFooter(embedFooter)
 
+            // Create the button to show the command list
             const rowButton = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                     .setCustomId('show-command-list')
@@ -172,17 +193,21 @@ module.exports = {
                     .setStyle(ButtonStyle.Primary)
             )
 
+            // Send the main menu embed with the button
             const reply = await interaction.editReply({
                 embeds: [mainMenuEmbed],
                 components: [rowButton],
             })
 
+            // Create a collector to listen for button clicks
             const collector = reply.createMessageComponentCollector({
                 componentType: ComponentType.Button,
-                time: 60_000 * 5,
+                time: 60_000 * 5, // 5 minutes
             })
 
+            // Handle button click events
             collector.on('collect', async (i) => {
+                // Ignore clicks from users other than the command author
                 if (i.user.id !== interaction.user.id) {
                     return await i.reply({
                         content:
@@ -191,14 +216,16 @@ module.exports = {
                     })
                 }
 
+                // Update the message with the command list embed
                 if (i.customId === 'show-command-list') {
                     await i.update({
                         embeds: [commandListEmbed],
-                        components: [],
+                        components: [], // Remove the button
                     })
                 }
             })
 
+            // Remove the button when the collector ends
             collector.on('end', () => {
                 reply.edit({ components: [] })
             })
@@ -212,6 +239,7 @@ module.exports = {
     },
 }
 
+// Function to create an embed for a list of commands
 function createCommandListEmbed(commands, title, color) {
     const embed = new EmbedBuilder()
         .setColor(color)
@@ -224,6 +252,7 @@ function createCommandListEmbed(commands, title, color) {
     commands.forEach((cmd, index) => {
         const cmdStr = `> \`${index + 1}.\` </${cmd.name}:${cmd.id}> - ${cmd.description}\n`
 
+        // Add command to field, create new field if exceeding length
         if (currentFieldValue.length + cmdStr.length <= fieldValueMaxLength) {
             currentFieldValue += cmdStr
         } else {
@@ -235,6 +264,7 @@ function createCommandListEmbed(commands, title, color) {
         }
     })
 
+    // Add the last field
     if (currentFieldValue.length > 0) {
         embed.addFields({
             name: '\u200B',
@@ -245,6 +275,7 @@ function createCommandListEmbed(commands, title, color) {
     return embed
 }
 
+// Function to search for commands by name or description
 function getSearchResults(commandsByCategory, searchQuery) {
     return Array.from(commandsByCategory.values()).flatMap((commands) =>
         commands.filter(
@@ -255,6 +286,7 @@ function getSearchResults(commandsByCategory, searchQuery) {
     )
 }
 
+// Function to get commands organized by category from files
 async function getCommandsByCategory(guild) {
     const guildCommands = await guild.commands.fetch()
     const commandsDirectory = path.join(__dirname, '..')
