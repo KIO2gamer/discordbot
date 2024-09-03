@@ -8,7 +8,6 @@ const {
 } = require('discord.js')
 const fs = require('fs')
 const path = require('path')
-const { description_full } = require('./botinfo')
 
 const commandData = new SlashCommandBuilder()
     .setName('help')
@@ -31,7 +30,7 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply()
 
-        const { client, guild } = interaction
+        const { guild } = interaction
         const commandName = interaction.options
             .getString('command')
             ?.toLowerCase()
@@ -41,6 +40,11 @@ module.exports = {
 
         const commandsByCategory = await getCommandsByCategory(guild)
         const allCommands = Array.from(commandsByCategory.values()).flat()
+
+        const embedFooter = {
+            text: `Requested by ${interaction.user.tag}`,
+            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+        }
 
         if (commandName) {
             const command = allCommands.find((cmd) => cmd.name === commandName)
@@ -52,38 +56,35 @@ module.exports = {
                 })
             }
 
-            // --- Check for duplicate usage and examples before adding fields ---
             const usageField = {
-                name: 'Usage',
+                name: 'Usage:',
                 value: command.usage
                     ? `\`${command.usage}\``
                     : 'No specific usage.',
+                inline: false,
             }
             const examplesField = {
-                name: 'Examples',
+                name: 'Examples:',
                 value: command.examples
                     ? command.examples.map((ex) => `\`${ex}\``).join('\n')
                     : 'No examples provided.',
+                inline: false,
             }
 
             const commandInfoEmbed = new EmbedBuilder()
                 .setColor('#2ecc71')
-                .setTitle(`Command Details: /${command.name}`)
+                .setTitle(`❓ Command Details: /${command.name}`)
                 .setDescription(
-                    command.description_full ||
-                        command.description ||
-                        'No detailed description available.'
+                    truncateDescription(
+                        command.description_full ||
+                            command.description ||
+                            'No detailed description available.'
+                    )
                 )
+                .addFields(usageField)
                 .setTimestamp()
-                .setFooter({
-                    text: `Requested by ${interaction.user.tag}`,
-                    iconURL: interaction.user.displayAvatarURL({
-                        dynamic: true,
-                    }),
-                })
+                .setFooter(embedFooter)
 
-            // Add fields to the embed conditionally
-            commandInfoEmbed.addFields(usageField)
             if (usageField.value !== examplesField.value) {
                 commandInfoEmbed.addFields(examplesField)
             }
@@ -96,43 +97,48 @@ module.exports = {
                 commandsByCategory,
                 searchQuery
             )
+
+            if (searchResults.length === 0) {
+                return await interaction.editReply({
+                    content: `No commands found matching "${searchQuery}"`,
+                    ephemeral: true,
+                })
+            }
+
             const searchEmbed = createCommandListEmbed(
                 searchResults,
                 `🔍 Search Results for "${searchQuery}"`,
                 '#f39c12'
-            ).setFooter({
-                text: `Requested by ${interaction.user.tag}`,
-                iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-            })
+            ).setFooter(embedFooter)
+
             return await interaction.editReply({ embeds: [searchEmbed] })
         }
 
         try {
-            // Create commandListEmbed with categories
             const commandListEmbed = new EmbedBuilder()
                 .setColor('#2ecc71')
                 .setTitle('📃 Kiyo Bot Commands')
+                .setDescription(
+                    'Here is a list of all commands categorized by their functionality:'
+                )
                 .setTimestamp()
-                .setFooter({
-                    text: `Requested by ${interaction.user.tag}`,
-                    iconURL: interaction.user.displayAvatarURL({
-                        dynamic: true,
-                    }),
-                })
+                .setFooter(embedFooter)
 
             for (const [category, commands] of commandsByCategory.entries()) {
                 let fieldValue = ''
 
-                commands.forEach((cmd, index) => {
-                    const cmdStr = `> \`${index + 1}.\` </${cmd.name}:${
-                        cmd.id
-                    }> - ${cmd.description}\n`
+                const sortedCommands = commands.sort((a, b) =>
+                    a.name.localeCompare(b.name)
+                ) // Sort commands alphabetically
+
+                sortedCommands.forEach((cmd) => {
+                    const cmdStr = `</${cmd.name}:${cmd.id}> - ${truncateDescription(cmd.description)}\n`
 
                     if (fieldValue.length + cmdStr.length <= 1024) {
                         fieldValue += cmdStr
                     } else {
                         commandListEmbed.addFields({
-                            name: category,
+                            name: `**${category}**`,
                             value: fieldValue,
                             inline: false,
                         })
@@ -142,7 +148,7 @@ module.exports = {
 
                 if (fieldValue.length > 0) {
                     commandListEmbed.addFields({
-                        name: category,
+                        name: `**${category}**`,
                         value: fieldValue,
                         inline: false,
                     })
@@ -151,18 +157,13 @@ module.exports = {
 
             const mainMenuEmbed = new EmbedBuilder()
                 .setColor('#2ecc71')
-                .setTitle('Welcome to Kiyo Bot Help')
+                .setTitle('Welcome to Kiyo Bot Help 👋')
                 .setDescription(
                     'Click the button below to view a list of all commands. You can also search for a specific command using `/help [search]`!'
                 )
                 .setThumbnail(interaction.client.user.avatarURL())
-                .setFooter({
-                    text: `Requested by ${interaction.user.tag}`,
-                    iconURL: interaction.user.displayAvatarURL({
-                        dynamic: true,
-                    }),
-                })
                 .setTimestamp()
+                .setFooter(embedFooter)
 
             const rowButton = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -252,77 +253,6 @@ function getSearchResults(commandsByCategory, searchQuery) {
                 cmd.description.toLowerCase().includes(searchQuery)
         )
     )
-}
-
-async function generateCategoryEmbed(interaction, commandsByCategory) {
-    const categoryOptions = Array.from(commandsByCategory.keys()).map(
-        (category) => ({
-            label: category.charAt(0).toUpperCase() + category.slice(1),
-            value: category,
-        })
-    )
-
-    const rowDropdown = new ActionRowBuilder().addComponents(
-        new StringSelectMenuBuilder()
-            .setCustomId('help-category-select')
-            .setPlaceholder('Choose a category')
-            .addOptions(categoryOptions)
-    )
-    const rowButton = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-            .setCustomId('go-back')
-            .setLabel('Main Menu')
-            .setStyle(ButtonStyle.Secondary)
-    )
-
-    const mainMenuEmbed = new EmbedBuilder()
-        .setColor('#2ecc71')
-        .setTitle('Welcome to Kiyo Bot Help')
-        .setDescription(
-            'Use the dropdown below to select a command category. You can also search for a specific command using `/help [search]`!'
-        )
-        .setThumbnail(interaction.client.user.avatarURL())
-        .setFooter({
-            text: `Requested by ${interaction.user.tag}`,
-            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-        })
-        .setTimestamp()
-
-    const reply = await interaction.editReply({
-        embeds: [mainMenuEmbed],
-        components: [rowDropdown, rowButton],
-    })
-
-    const collector = reply.createMessageComponentCollector({
-        componentType: [ComponentType.StringSelect, ComponentType.Button],
-        time: 60_000 * 5,
-    })
-
-    collector.on('collect', async (i) => {
-        if (i.user.id !== interaction.user.id) {
-            return await i.reply({
-                content: 'You should run the command to use this interaction.',
-                ephemeral: true,
-            })
-        }
-
-        if (i.isStringSelectMenu()) {
-            const selectedCategory = i.values[0]
-            await generateCategoryEmbed(
-                interaction,
-                commandsByCategory,
-                selectedCategory
-            )
-            await i.deferUpdate()
-        } else if (i.isButton() && i.customId === 'go-back') {
-            await generateCategoryEmbed(interaction, commandsByCategory)
-            await i.deferUpdate()
-        }
-    })
-
-    collector.on('end', () => {
-        reply.edit({ components: [] })
-    })
 }
 
 async function getCommandsByCategory(guild) {
