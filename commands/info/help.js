@@ -245,18 +245,13 @@ function createCommandListEmbed(commands, title, color) {
 }
 
 function getSearchResults(commandsByCategory, searchQuery) {
-    const searchResults = []
-    for (const commands of commandsByCategory.values()) {
-        commands.forEach((cmd) => {
-            if (
+    return Array.from(commandsByCategory.values()).flatMap((commands) =>
+        commands.filter(
+            (cmd) =>
                 cmd.name.toLowerCase().includes(searchQuery) ||
                 cmd.description.toLowerCase().includes(searchQuery)
-            ) {
-                searchResults.push(cmd)
-            }
-        })
-    }
-    return searchResults
+        )
+    )
 }
 
 async function generateCategoryEmbed(interaction, commandsByCategory) {
