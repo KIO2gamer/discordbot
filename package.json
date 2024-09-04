@@ -16,7 +16,7 @@
             "url": "https://saahild.com"
         }
     ],
-    "license": "ISC",
+    "license": "MIT",
     "nodemonConfig": {
         "ignore": [
             "assets/"
