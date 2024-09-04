@@ -1,12 +1,25 @@
 {
-    "name": "discord-bot",
+    "name": "Kiyo-Discord-Bot",
     "version": "1.0.0",
+    "description": "A versatile Discord bot with moderation, entertainment, and utility features.",
     "main": "index.js",
     "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
         "test": "test-settings.js"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/KIO2gamer/discordbot.git"
+    },
     "keywords": [
-        "discord"
+        "discord",
+        "bot",
+        "moderation",
+        "fun",
+        "games",
+        "utility",
+        "api"
     ],
     "author": "KIO2gamer (https://kio2gamer.carrd.co/)",
     "contributors": [
@@ -29,7 +42,7 @@
         "@types/node": "^18.0.6",
         "axios": "^1.6.2",
         "cheerio": "^1.0.0-rc.12",
-        "discord.js": "^14.15.3",
+        "discord.js": "^14.16.1",
         "dotenv": "^16.3.1",
         "genius-api": "^0.0.2",
         "he": "^1.2.0",
@@ -44,6 +57,5 @@
     },
     "devDependencies": {
         "prettier": "3.2.5"
-    },
-    "description": "A discord bot"
+    }
 }
