@@ -15,7 +15,7 @@
 
 </div>
 
-<p align="center"> Kiyo is a versatile and dynamic Discord bot designed to enhance your server experience. It offers a wide range of functionalities, including moderation tools, fun and engaging games, and customized commands. 
+<p align="center"> Kiyo is a versatile and dynamic Discord bot designed to enhance your server experience. It offers a wide range of functionalities, including moderation tools, fun and engaging games, utility commands, and seamless integration with various APIs for enhanced features. 
     <br> 
 </p>
 
@@ -23,78 +23,62 @@
 
 -   [About](#about)
 -   [Features](#features)
--   [Getting Started](#getting_started)
+-   [Getting Started](#getting-started)
     -   [Prerequisites](#prerequisites)
-    -   [Installing](#installing)
+    -   [Installation](#installation)
 -   [Commands](#commands)
--   [Built Using](#built_using)
+-   [API Integration](#api-integration)
+-   [Built Using](#built-using)
 -   [Contributing](#contributing)
 -   [Authors](#authors)
--   [Acknowledgments](#acknowledgement)
+-   [Acknowledgments](#acknowledgments)
 
-## 🧐 About <a name = "about"></a>
+## 🧐 About <a name="about"></a>
 
-Kiyo is built to be a jack-of-all-trades, aiming to provide a little something for everyone. It's built with [Discord.js](https://discord.js.org/) and utilizes a [MongoDB](https://www.mongodb.com/) database for persistent storage.
+Kiyo is a multipurpose Discord bot built with [Discord.js](https://discord.js.org/), a powerful JavaScript library for interacting with the Discord API. Kiyo leverages a [MongoDB](https://www.mongodb.com/) database to store data persistently, ensuring a smooth and reliable experience. It's designed to be user-friendly and highly customizable, catering to a variety of server needs.
 
-## ✨ Features <a name = "features"></a>
+## ✨ Features <a name="features"></a>
 
-Here are some of Kiyo's key features:
+### Moderation 🛡️
 
--   **Moderation:** Keep your server clean and organized with commands for:
-    -   Kicking/banning users
-    -   Managing roles
-    -   Deleting messages in bulk
--   **Fun & Games:** Engage your community with:
-    -   Fun commands (e.g., 8ball, dice rolling, memes)
-    -   Mini-games
--   **Utility:** Make life easier with:
-    -   Information lookup (weather, translation)
-    -   Polls
+Keep your server clean and organized with Kiyo's robust moderation features:
 
-## 🏁 Getting Started <a name = "getting_started"></a>
+-   **Kick/Ban Users:** Remove disruptive users from your server with customizable reasons.
+-   **Manage Roles:** Easily assign and manage roles to members to organize your community.
+-   **Purge Messages:** Quickly delete a specified number of messages in a channel to clean up clutter or remove inappropriate content.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+### Fun & Games 🎉
 
-### Prerequisites <a name = "prerequisites"></a>
+Engage your community and add a touch of entertainment with Kiyo's fun commands and mini-games:
 
--   **Node.js and npm:** You'll need Node.js (version 16.6.0 or higher recommended) and npm installed. You can download them from [https://nodejs.org/](https://nodejs.org/).
--   **MongoDB Account:** You'll need a free MongoDB Atlas account to store your bot's data. Sign up at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
--   **Discord Bot Application:** Follow these steps to create a Discord bot application and get your bot token:
-    1. Go to the Discord Developer Portal: [https://discord.com/developers/applications](https://discord.com/developers/applications)
-    2. Click on "New Application" and give your application a name.
-    3. Go to the "Bot" tab within your application settings.
-    4. Click on "Add Bot" and confirm.
-    5. **Keep your bot token secret!** This is like a password for your bot.
--   **API Keys:** You'll need several API keys for different functionalities of the bot. Here are the required keys and how to obtain them:
+-   **Fun Commands:** Enjoy commands like 8ball, dice rolling, meme generation, and more for a fun and interactive experience.
+-   **Mini-games:** Play engaging mini-games with your friends directly on your Discord server.
 
-    1. **Gemini API Key**
-        - Gemini is Google's AI Language. This project uses `gemini-1.5-flash` for the translate command.
-        - Get the API Key at [Google AI Studio](https://aistudio.google.com/app/apikey)
-    2. **Tenor API Key**
+### Utility 🧰
 
-        - The Tenor API key is used to fetch GIFs from the Tenor API.
-        - Sign up at [Tenor Developers](https://tenor.com/gifapi/documentation) and create an API key.
+Kiyo provides a range of utility commands to make server management and member interactions easier:
 
-    3. **Pexels API Key**
+-   **Information Lookup:** Get quick access to information like weather forecasts, translations, and more.
+-   **Polls:** Create polls to gather opinions from your community and make decisions democratically.
 
-        - The Pexels API key is used to fetch high-quality images from Pexels.
-        - Sign up at [Pexels](https://www.pexels.com/api/) and generate an API key.
+## 🏁 Getting Started <a name="getting-started"></a>
 
-    4. **Weather API Key**
+These instructions will guide you through setting up Kiyo on your local machine for development and testing.
 
-        - The Weather API key is used to fetch weather data from a weather API service.
-        - You can get a free API key from [WeatherAPI](https://www.weatherapi.com/docs/).
+### Prerequisites <a name="prerequisites"></a>
 
-    5. **Giphy API Key**
+Before getting started, ensure you have the following:
 
-        - The Giphy API key is used to fetch GIFs from Giphy.
-        - Sign up at [Giphy Developers](https://developers.giphy.com/docs/api/) and create an API key.
+-   **Node.js and npm:** Kiyo requires Node.js (version 16.6.0 or higher is recommended) and npm, which comes bundled with Node.js. You can download Node.js from [https://nodejs.org/](https://nodejs.org/).
+-   **MongoDB Account:** You'll need a free MongoDB Atlas account to store Kiyo's data. Create an account at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
+-   **Discord Bot Application:** Create a Discord bot application and obtain your bot token by following these steps:
+    1. Go to the Discord Developer Portal: [https://discord.com/developers/applications](https://discord.com/developers/applications).
+    2. Click "New Application" and give your application a name.
+    3. Navigate to the "Bot" tab in your application settings.
+    4. Click "Add Bot" and confirm.
+    5. **Keep your bot token secret!** Treat it like a password for your bot.
 
-    6. **Giant Bomb API Key**
-        - The Giant Bomb API key is used to fetch video game information.
-        - Sign up at [Giant Bomb](https://www.giantbomb.com/api) and generate an API key.
-
-### Installing <a name = "installing"></a>
+### Installation <a name="installation"></a>
 
 1. **Clone the Repository:**
 
@@ -110,26 +94,34 @@ These instructions will get you a copy of the project up and running on your loc
     ```
 
 3. **Configuration:**
-   Create a .env file in the root directory of the project and add the following to your .env file, replacing the `<1>` with your actual credentials:
 
-    ```bash
-    DISCORD_TOKEN=<1>    // The secret Bot token
-    MONGODB_URL=<1>
-    GEMINI_API_KEY=<1>
-    CLIENT_ID=<1>        // Discord User/Client ID
-    GUILD_IDS=<1>        // The server ID(s)
-    TENOR_API_KEY=<1>
-    PEXELS_API_KEY=<1>
-    WEATHER_API_KEY=<1>
-    GIPHY_API_KEY=<1>
-    GIANT_BOMB_API_KEY=<1>
-    ```
+-   Create a `.env` file in the project's root directory.
+-   Add the following to your `.env` file, replacing the placeholders (`<your_credentials>`) with your actual credentials:
 
-    For `GUILD_IDS`, You can either add only one (stated above) or a array of them:
+        ```bash
+        DISCORD_TOKEN=<your_discord_bot_token>
+        MONGODB_URL=<your_mongodb_connection_string>
+        GEMINI_API_KEY=<your_gemini_api_key>
+        CLIENT_ID=<your_discord_client_id>
+        GUILD_IDS=<your_discord_server_id>
+        TENOR_API_KEY=<your_tenor_api_key>
+        PEXELS_API_KEY=<your_pexels_api_key>
+        WEATHER_API_KEY=<your_weather_api_key>
+        GIPHY_API_KEY=<your_giphy_api_key>
+        GIANT_BOMB_API_KEY=<your_giant_bomb_api_key>
+        ```
 
-    ```bash
-    GUILD_IDS=[<1>,<2>,...]
-    ```
+-   For `GUILD_IDS`, you can add either a single server ID or multiple server IDs as an array:
+
+        ```bash
+        # Single server ID:
+
+        GUILD_IDS=<your_discord_server_id>
+
+        # Multiple server IDs:
+
+        GUILD_IDS=[<server_id_1>, <server_id_2>, ...]
+        ```
 
 4. **Start the bot:**
     ```bash
@@ -140,25 +132,29 @@ These instructions will get you a copy of the project up and running on your loc
     npm run dev
     ```
 
-## 🎮 Commands <a name = "commands"></a>
+## 🎮 Commands <a name="commands"></a>
 
-Kiyo uses slash commands (introduced in Discord API v9). Here's a glimpse of Kiyo's command categories:
+Kiyo utilizes slash commands, a modern and intuitive way to interact with bots on Discord (introduced in Discord API v9). Here's a preview of Kiyo's command categories and examples:
 
--   **Fun/Entertainment:**
-    |Command|Description|
-    | --- | --- |
-    | /8ball <question\> | Ask the magic 8-ball a question. |
-    | /roll | Roll a dice to get a random side. |
-    | /meme | Get a random meme.|
+### Fun/Entertainment 🎉
 
--   **Moderation:**
-    |Command|Description|
-    | --- | --- |
-    | /kick \<target> \<reason> | Kick a user from the server.|
-    | /ban \<target> \<reason> | Ban a user from the server.|
-    | /purge \<target> \<number> | Delete a specified number of messages in the current channel.|
+- `/8ball <question>`: Ask the magic 8-ball a yes/no question and get a mystical response.
+- `/roll`: Roll a virtual dice and get a random number.
+- `/meme`:  Get a random meme to brighten your day or share a laugh with your friends. 
 
-**And more!** Kiyo offers a variety of commands for utility, information, and custom features. You can use the `/help` command within your Discord server to see a full list of available commands and their descriptions.
+### Moderation 🛡️
+
+- `/kick <target> <reason>`:  Kick a user from the server for disruptive behavior.
+- `/ban <target> <reason>`:  Ban a user from the server, preventing their return.
+- `/purge <number>`: Delete a specified number of messages in the current channel.
+
+### Utility 🧰
+
+- `/weather <location>`: Get the current weather forecast for a specific location.
+- `/translate <text> <target_language>`:  Translate text into another language.
+- `/poll <question> <option1> <option2> ...`: Create a poll with multiple options for your server members to vote on.
+
+**For a Complete Command List:**  Use the `/help` command in your Discord server to get a detailed list of all commands and their descriptions.
 
 ## ⛏️ Build Using <a name = "built_using"></a>
 
