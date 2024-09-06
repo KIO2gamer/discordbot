@@ -22,7 +22,6 @@ requiredEnvVars.forEach((envVar) => {
 
 const CLIENT_ID = process.env.CLIENT_ID
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN
-const GUILD_IDS = process.env.GUILD_IDS ? process.env.GUILD_IDS.split(',') : []
 
 // Initialize the client -  Only include necessary intents
 const client = new Client({
@@ -64,15 +63,10 @@ function loadCommands(dir) {
         const stat = fs.statSync(filePath)
 
         if (stat.isDirectory()) {
-            // Recursively load commands from subdirectories
             loadCommands(filePath)
         } else if (file.endsWith('.js')) {
             const command = require(filePath)
-            // Use hasOwnProperty() to check for properties
-            if (
-                command.hasOwnProperty('data') &&
-                command.hasOwnProperty('execute')
-            ) {
+            if (command.data && command.execute) {
                 client.commands.set(command.data.name, command)
 
                 if (command.data.aliases) {
@@ -130,13 +124,11 @@ async function connectToMongoDB(retries = 5) {
     }
 }
 
-// Deploy commands -  Consider using slash commands for easier management
+// Deploy commands
 const deployCommands = async () => {
     const commands = []
-    // Set the base directory for your commands
     const commandsDir = path.join(__dirname, 'commands')
 
-    // Function to recursively get commands from subfolders
     function getCommandsFromDir(dirPath) {
         const files = fs.readdirSync(dirPath)
 
@@ -159,7 +151,6 @@ const deployCommands = async () => {
         }
     }
 
-    // Start getting commands from the base directory
     getCommandsFromDir(commandsDir)
 
     const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN)
@@ -173,25 +164,12 @@ const deployCommands = async () => {
         await rest.put(Routes.applicationCommands(CLIENT_ID), { body: [] })
         console.log('Successfully reset global commands.')
 
-        // Deploy commands to specific guilds
-        for (const guildId of GUILD_IDS) {
-            try {
-                const data = await rest.put(
-                    Routes.applicationGuildCommands(CLIENT_ID, guildId),
-                    {
-                        body: commands,
-                    }
-                )
-                console.log(
-                    `Successfully reloaded ${data.length} commands for guild ${guildId}.`
-                )
-            } catch (error) {
-                console.error(
-                    `Failed to deploy commands for guild ${guildId}:`,
-                    error
-                )
-            }
-        }
+        // Deploy global commands
+        const data = await rest.put(Routes.applicationCommands(CLIENT_ID), {
+            body: commands,
+        })
+
+        console.log(`Successfully reloaded ${data.length} global commands.`)
     } catch (error) {
         console.error('Error deploying commands:', error)
     }
