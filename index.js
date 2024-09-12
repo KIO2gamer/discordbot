@@ -10,7 +10,6 @@ const {
     Routes,
 } = require('discord.js')
 const mongoose = require('mongoose')
-
 // Validate environment variables
 const requiredEnvVars = ['DISCORD_TOKEN', 'MONGODB_URL', 'CLIENT_ID']
 requiredEnvVars.forEach((envVar) => {
@@ -22,6 +21,7 @@ requiredEnvVars.forEach((envVar) => {
 
 const CLIENT_ID = process.env.CLIENT_ID
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN
+const GUILD_IDS = process.env.GUILD_IDS ? process.env.GUILD_IDS.split(',') : []
 
 // Initialize the client -  Only include necessary intents
 const client = new Client({
@@ -50,23 +50,25 @@ const client = new Client({
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 })
-
 // Command collection
 client.commands = new Collection()
-
 // Function to recursively load commands from a directory
 function loadCommands(dir) {
     const files = fs.readdirSync(dir)
-
     for (const file of files) {
         const filePath = path.join(dir, file)
         const stat = fs.statSync(filePath)
 
         if (stat.isDirectory()) {
+            // Recursively load commands from subdirectories
             loadCommands(filePath)
         } else if (file.endsWith('.js')) {
             const command = require(filePath)
-            if (command.data && command.execute) {
+            // Use hasOwnProperty() to check for properties
+            if (
+                command.hasOwnProperty('data') &&
+                command.hasOwnProperty('execute')
+            ) {
                 client.commands.set(command.data.name, command)
 
                 if (command.data.aliases) {
@@ -82,16 +84,13 @@ function loadCommands(dir) {
         }
     }
 }
-
 // Load commands from the 'commands' directory
 loadCommands(path.join(__dirname, 'commands'))
-
 // Event handling
 const loadEvents = (dir) => {
     const eventFiles = fs
         .readdirSync(dir)
         .filter((file) => file.endsWith('.js'))
-
     for (const file of eventFiles) {
         const event = require(path.join(dir, file))
         if (event.once) {
@@ -101,9 +100,7 @@ const loadEvents = (dir) => {
         }
     }
 }
-
 loadEvents(path.join(__dirname, 'events'))
-
 // MongoDB connection
 async function connectToMongoDB(retries = 5) {
     try {
@@ -124,18 +121,19 @@ async function connectToMongoDB(retries = 5) {
     }
 }
 
-// Deploy commands
+// Deploy commands -  Consider using slash commands for easier management
 const deployCommands = async () => {
     const commands = []
+    // Set the base directory for your commands
     const commandsDir = path.join(__dirname, 'commands')
 
+    // Function to recursively get commands from subfolders
     function getCommandsFromDir(dirPath) {
         const files = fs.readdirSync(dirPath)
 
         for (const file of files) {
             const filePath = path.join(dirPath, file)
             const stat = fs.statSync(filePath)
-
             if (stat.isDirectory()) {
                 getCommandsFromDir(filePath)
             } else if (file.endsWith('.js')) {
@@ -151,6 +149,7 @@ const deployCommands = async () => {
         }
     }
 
+    // Start getting commands from the base directory
     getCommandsFromDir(commandsDir)
 
     const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN)
@@ -159,22 +158,33 @@ const deployCommands = async () => {
         console.log(
             `Started refreshing ${commands.length} application (/) commands.`
         )
-
         // Reset global commands (if needed) - COMMENT OUT IF NOT NEEDED
         await rest.put(Routes.applicationCommands(CLIENT_ID), { body: [] })
         console.log('Successfully reset global commands.')
 
-        // Deploy global commands
-        const data = await rest.put(Routes.applicationCommands(CLIENT_ID), {
-            body: commands,
-        })
-
-        console.log(`Successfully reloaded ${data.length} global commands.`)
+        // Deploy commands to specific guilds
+        for (const guildId of GUILD_IDS) {
+            try {
+                const data = await rest.put(
+                    Routes.applicationGuildCommands(CLIENT_ID, guildId),
+                    {
+                        body: commands,
+                    }
+                )
+                console.log(
+                    `Successfully reloaded ${data.length} commands for guild ${guildId}.`
+                )
+            } catch (error) {
+                console.error(
+                    `Failed to deploy commands for guild ${guildId}:`,
+                    error
+                )
+            }
+        }
     } catch (error) {
         console.error('Error deploying commands:', error)
     }
 }
-
 // Graceful shutdown
 process.on('SIGINT', async () => {
     console.log('Shutting down gracefully...')
@@ -182,7 +192,6 @@ process.on('SIGINT', async () => {
     client.destroy()
     process.exit(0)
 })
-
 // Login to Discord and start the bot
 ;(async () => {
     try {
