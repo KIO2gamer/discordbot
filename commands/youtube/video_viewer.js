@@ -27,7 +27,7 @@ module.exports = {
         ),
 
     async execute(interaction) {
-        await interaction.deferReply()
+        await interaction.deferReply({ content: 'Searching YouTube...' })
         const query = interaction.options.getString('query')
         let currentPage = 1
         let nextPageToken = ''
