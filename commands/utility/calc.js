@@ -1,21 +1,10 @@
-const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    ApplicationIntegrationType,
-    InteractionContextType,
-} = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const math = require('mathjs') // Import mathjs
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('calculate')
         .setDescription('Perform a calculation using mathjs.')
-        .setIntegrationTypes(ApplicationIntegrationType.UserInstall)
-        .setContexts(
-            InteractionContextType.Guild,
-            InteractionContextType.BotDM,
-            InteractionContextType.PrivateChannel
-        )
         .addStringOption((option) =>
             option
                 .setName('expression')
