@@ -1,26 +1,20 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
-const Genius = require('genius-api')
-const cheerio = require('cheerio')
+const Genius = require('genius-lyrics')
 
-const GENIUS_API_TOKEN = 'YOUR_GENIUS_API_TOKEN_HERE'
-
+const GENIUS_API_TOKEN = process.env.GENIUS_ACCESS_TOKEN_MUSIC
 const ROUND_TIME_LIMIT = 30000
 const HINT_PENALTY = 1
-const REQUESTS_PER_MINUTE = 10
-const RATE_LIMIT_DELAY = 60000 / REQUESTS_PER_MINUTE
-let lastRequestTime = 0
+const MAX_ROUNDS = 5
+
+const geniusClient = new Genius.Client(GENIUS_API_TOKEN)
 
 module.exports = {
-    description_full:
-        'A music lyric guessing game! The bot will provide a snippet of lyrics and users have to guess the next line. The player with the most points at the end of 5 rounds wins.',
-    usage: '/lyricwhiz',
-    examples: ['/lyricwhiz'],
     data: new SlashCommandBuilder()
         .setName('lyricwhiz')
         .setDescription('Start a music lyric guessing game!'),
     async execute(interaction) {
         await interaction.reply(
-            "Let's play LyricWhiz!\n\nI'll give you a snippet of lyrics, and you have to guess the next line."
+            "Let's play LyricWhiz! I'll give you a snippet of lyrics, and you have to guess the next line."
         )
 
         let players = []
@@ -32,7 +26,8 @@ module.exports = {
         await joinMessage.react('🎵')
 
         const joinCollector = joinMessage.createReactionCollector({
-            filter: (reaction, user) => !user.bot,
+            filter: (reaction, user) =>
+                reaction.emoji.name === '🎵' && !user.bot,
             time: 30000,
         })
 
@@ -50,31 +45,30 @@ module.exports = {
             await interaction.followUp(
                 `Game starting with ${players.length} players! Get ready!`
             )
-
-            const playGame = async () => {
-                for (currentRound; currentRound <= 5; currentRound++) {
-                    await playRound()
-                }
-                declareWinner(players)
-            }
-
-            playGame()
+            await playGame()
         })
+
+        async function playGame() {
+            for (currentRound; currentRound <= MAX_ROUNDS; currentRound++) {
+                await playRound()
+            }
+            declareWinner()
+        }
 
         async function playRound() {
             await interaction.followUp(`**Round ${currentRound}!**`)
             let hintGiven = false
 
             try {
-                const songData = await getSongFromGeniusAPI()
-                if (!songData) {
+                const song = await getRandomSong()
+                if (!song) {
                     await interaction.followUp(
                         "Oops, couldn't fetch a song. Try again later!"
                     )
                     return
                 }
 
-                const { lyrics, correctLine } = processLyrics(songData.lyrics)
+                const { lyrics, correctLine } = await processLyrics(song)
                 await interaction.followUp(lyrics)
 
                 const answerCollector =
@@ -110,23 +104,22 @@ module.exports = {
                 })
 
                 answerCollector.on('end', async (collected, reason) => {
-                    if (reason !== 'correct') return
+                    if (reason !== 'correct') {
+                        await interaction.followUp(
+                            `The correct answer was: **${correctLine}**`
+                        )
+                    }
 
                     if (!hintGiven) {
                         await interaction.followUp(
                             'React with 🤔 to this message for a hint (this will deduct a point)!'
                         )
 
-                        const hintReactionFilter = (reaction, user) => {
-                            return (
-                                ['🤔'].includes(reaction.emoji.name) &&
-                                players.some((p) => p.id === user.id)
-                            )
-                        }
-
                         const hintCollector =
-                            interaction.channel.awaitReactions({
-                                filter: hintReactionFilter,
+                            interaction.channel.createReactionCollector({
+                                filter: (reaction, user) =>
+                                    reaction.emoji.name === '🤔' &&
+                                    players.some((p) => p.id === user.id),
                                 max: 1,
                                 time: ROUND_TIME_LIMIT / 2,
                             })
@@ -135,13 +128,12 @@ module.exports = {
                             const requestingPlayer = players.find(
                                 (p) => p.id === user.id
                             )
-
                             if (requestingPlayer) {
                                 if (requestingPlayer.score > 0) {
                                     requestingPlayer.score -= HINT_PENALTY
                                 }
                                 await interaction.followUp(
-                                    `Hint:  ${provideHint(correctLine)}`
+                                    `Hint: ${provideHint(correctLine)}`
                                 )
                                 hintGiven = true
                             }
@@ -153,30 +145,17 @@ module.exports = {
                             }
                         })
                     }
-
-                    if (currentRound < 5) {
-                        currentRound++
-                        playRound()
-                    }
                 })
             } catch (error) {
                 console.error('An error occurred during the round:', error)
                 await interaction.followUp(
                     'Oops, something went wrong! Skipping to the next round.'
                 )
-
-                if (currentRound < 5) {
-                    currentRound++
-                    setTimeout(playRound, 2000) // Short delay before next round
-                } else {
-                    declareWinner(players)
-                }
             }
         }
 
         function provideHint(correctLine) {
             const words = correctLine.split(' ')
-
             if (words.length > 3) {
                 const visibleWords = Math.floor(words.length / 2)
                 return words.slice(0, visibleWords).join(' ') + ' ...'
@@ -190,7 +169,6 @@ module.exports = {
         function declareWinner() {
             players.sort((a, b) => b.score - a.score)
             const winner = players[0]
-
             const tieWinners = players.filter((p) => p.score === winner.score)
 
             if (tieWinners.length > 1) {
@@ -209,40 +187,26 @@ module.exports = {
     },
 }
 
-async function getSongFromGeniusAPI() {
-    const currentTime = Date.now()
-    const timeSinceLastRequest = currentTime - lastRequestTime
-
-    if (timeSinceLastRequest < RATE_LIMIT_DELAY) {
-        await new Promise((resolve) =>
-            setTimeout(resolve, RATE_LIMIT_DELAY - timeSinceLastRequest)
-        )
-    }
-
+async function getRandomSong() {
     const randomSearchTerm = getRandomElement([
-        'Taylor Swift Shake It Off',
-        'Imagine Dragons Believer',
-        'Ed Sheeran Shape of You',
-        'Billie Eilish Bad Guy',
+        'Taylor Swift',
+        'Imagine Dragons',
+        'Ed Sheeran',
+        'Billie Eilish',
+        'Ariana Grande',
+        'Drake',
+        'The Weeknd',
+        'Adele',
     ])
 
     try {
-        // Correct client instantiation (genius-api 8.0.0+)
-        const geniusClient = new Genius({ accessToken: GENIUS_API_TOKEN })
-
         const searches = await geniusClient.songs.search(randomSearchTerm)
-        lastRequestTime = Date.now()
-
         if (searches.length === 0) {
             console.log('No results found for:', randomSearchTerm)
             return null
         }
 
-        const firstHit = searches[0]
-        const lyrics = await geniusClient.songs.lyrics(firstHit.id)
-        lastRequestTime = Date.now()
-
-        return { lyrics: lyrics }
+        return getRandomElement(searches)
     } catch (error) {
         console.error('Error fetching from Genius API:', error)
         return null
@@ -253,23 +217,11 @@ function getRandomElement(array) {
     return array[Math.floor(Math.random() * array.length)]
 }
 
-function processLyrics(fullLyrics) {
-    const $ = cheerio.load(fullLyrics)
-    const cleanedLyrics = $('body *')
-        .contents()
-        .map(function () {
-            return this.type === 'text' ? $(this).text() : ''
-        })
-        .get()
-        .join(' ')
-
-    const lyricsWithoutHeaders = cleanedLyrics.replace(/\[.*?\]\s?/g, '')
-
-    const normalizedLyrics = lyricsWithoutHeaders.replace(/<br>/g, '\n')
-
-    const lyricsLines = normalizedLyrics
+async function processLyrics(song) {
+    const lyrics = await song.lyrics()
+    const lyricsLines = lyrics
         .split('\n')
-        .filter((line) => line.trim() !== '')
+        .filter((line) => line.trim() !== '' && !line.startsWith('['))
 
     if (lyricsLines.length < 3) {
         return {
@@ -284,5 +236,11 @@ function processLyrics(fullLyrics) {
     const lyricsSnippet = snippetLines.join('\n')
     const correctLine = lyricsLines[endIndex].trim()
 
-    return { lyrics: lyricsSnippet, correctLine: correctLine }
+    const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle(`Lyrics from: ${song.title} by ${song.artist.name}`)
+        .setDescription(lyricsSnippet)
+        .setFooter({ text: 'Can you guess the next line?' })
+
+    return { lyrics: { embeds: [embed] }, correctLine: correctLine }
 }
