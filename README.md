@@ -138,23 +138,23 @@ Kiyo utilizes slash commands, a modern and intuitive way to interact with bots o
 
 ### Fun/Entertainment 🎉
 
-- `/8ball <question>`: Ask the magic 8-ball a yes/no question and get a mystical response.
-- `/roll`: Roll a virtual dice and get a random number.
-- `/meme`:  Get a random meme to brighten your day or share a laugh with your friends. 
+-   `/8ball <question>`: Ask the magic 8-ball a yes/no question and get a mystical response.
+-   `/roll`: Roll a virtual dice and get a random number.
+-   `/meme`: Get a random meme to brighten your day or share a laugh with your friends.
 
 ### Moderation 🛡️
 
-- `/kick <target> <reason>`:  Kick a user from the server for disruptive behavior.
-- `/ban <target> <reason>`:  Ban a user from the server, preventing their return.
-- `/purge <number>`: Delete a specified number of messages in the current channel.
+-   `/kick <target> <reason>`: Kick a user from the server for disruptive behavior.
+-   `/ban <target> <reason>`: Ban a user from the server, preventing their return.
+-   `/purge <number>`: Delete a specified number of messages in the current channel.
 
 ### Utility 🧰
 
-- `/weather <location>`: Get the current weather forecast for a specific location.
-- `/translate <text> <target_language>`:  Translate text into another language.
-- `/poll <question> <option1> <option2> ...`: Create a poll with multiple options for your server members to vote on.
+-   `/weather <location>`: Get the current weather forecast for a specific location.
+-   `/translate <text> <target_language>`: Translate text into another language.
+-   `/poll <question> <option1> <option2> ...`: Create a poll with multiple options for your server members to vote on.
 
-**For a Complete Command List:**  Use the `/help` command in your Discord server to get a detailed list of all commands and their descriptions.
+**For a Complete Command List:** Use the `/help` command in your Discord server to get a detailed list of all commands and their descriptions.
 
 ## ⛏️ Build Using <a name = "built_using"></a>
 
