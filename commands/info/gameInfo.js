@@ -50,7 +50,6 @@ module.exports = {
                 )
 
                 const game = gameResponse.data[0]
-                console.log(game)
 
                 // Create and send the embed message
                 const embed = new EmbedBuilder()
