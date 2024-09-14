@@ -13,6 +13,13 @@ module.exports = {
                 )
                 .setRequired(true)
         ),
+    description_full: 'Perform mathematical calculations using the mathjs library. This command can handle a wide range of mathematical operations and functions.',
+    usage: '/calculate <expression>',
+    examples: [
+        '/calculate 2 + 2',
+        '/calculate sin(45) * cos(30)',
+        '/calculate sqrt(16) + log(100)',
+    ],
     async execute(interaction) {
         const expression = interaction.options.getString('expression')
 
