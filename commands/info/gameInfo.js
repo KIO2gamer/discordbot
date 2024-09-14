@@ -1,8 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
+const axios = require('axios')
 
 module.exports = {
     description_full:
-        'Fetches information about a video game from the Giant Bomb API. This can include the game’s description, genres, release date, platforms, and a link to its page on Giant Bomb.',
+        'Fetches information about a video game from the IGDB API. This can include the game’s description, genres, release date, platforms, and a link to its page on IGDB.',
     usage: '/gameinfo <search>',
     examples: ['/gameinfo The Witcher 3', '/gameinfo "Grand Theft Auto V"'],
     data: new SlashCommandBuilder()
@@ -17,22 +18,45 @@ module.exports = {
 
     async execute(interaction) {
         const gameName = interaction.options.getString('search')
+        const clientId = process.env.IGDB_CLIENT_ID
+        const accessToken = process.env.IGDB_ACCESS_TOKEN
 
         try {
-            // Fetch game information from Giant Bomb API
-            const response = await fetch(
-                `https://www.giantbomb.com/api/search/?api_key=${process.env.GIANT_BOMB_API_KEY}&format=json&query=${encodeURIComponent(gameName)}&resources=game`
+            // Search for the game using IGDB API
+            const searchResponse = await axios.post(
+                'https://api.igdb.com/v4/games',
+                `search "${gameName}"; fields name, slug; limit 1;`,
+                {
+                    headers: {
+                        'Client-ID': clientId,
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
             )
-            const data = await response.json()
 
-            if (data.results && data.results.length > 0) {
-                const game = data.results[0]
+            if (searchResponse.data.length > 0) {
+                const gameSlug = searchResponse.data[0].slug
 
+                // Fetch game details using the game slug
+                const gameResponse = await axios.post(
+                    'https://api.igdb.com/v4/games',
+                    `fields name, summary, genres.name, first_release_date, platforms.name, rating, url; where slug = "${gameSlug}";`,
+                    {
+                        headers: {
+                            'Client-ID': clientId,
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    }
+                )
+
+                const game = gameResponse.data[0]
+                console.log(game)
+
+                // Create and send the embed message
                 const embed = new EmbedBuilder()
                     .setColor('#0099ff')
                     .setTitle(game.name)
-                    .setDescription(game.deck || 'No description available')
-                    .setThumbnail(game.image ? game.image.small_url : null)
+                    .setDescription(game.summary || 'No description available')
                     .addFields(
                         {
                             name: 'Genres',
@@ -43,15 +67,17 @@ module.exports = {
                         },
                         {
                             name: 'Release Date',
-                            value: game.original_release_date || 'Unknown',
+                            value: game.first_release_date
+                                ? new Date(
+                                      game.first_release_date * 1000
+                                  ).toLocaleDateString()
+                                : 'Unknown',
                             inline: true,
                         },
                         {
                             name: 'Rating',
-                            value: game.original_game_rating
-                                ? game.original_game_rating
-                                      .map((r) => r.name)
-                                      .join(', ')
+                            value: game.rating
+                                ? game.rating.toFixed(2)
                                 : 'No rating available',
                             inline: true,
                         },
@@ -63,8 +89,8 @@ module.exports = {
                             inline: true,
                         },
                         {
-                            name: 'Site Detail URL',
-                            value: `[Link](${game.site_detail_url})`,
+                            name: 'IGDB Page',
+                            value: `[Link](${game.url})`,
                             inline: true,
                         }
                     )
