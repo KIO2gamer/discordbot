@@ -42,13 +42,34 @@ module.exports = {
                     { name: 'Medium (4-20 minutes)', value: 'medium' },
                     { name: 'Long (> 20 minutes)', value: 'long' }
                 )
+        )
+        .addStringOption((option) =>
+            option
+                .setName('order')
+                .setDescription('Order of search results')
+                .setRequired(false)
+                .addChoices(
+                    { name: 'Relevance', value: 'relevance' },
+                    { name: 'Date', value: 'date' },
+                    { name: 'View Count', value: 'viewCount' },
+                    { name: 'Rating', value: 'rating' }
+                )
+        )
+        .addIntegerOption((option) =>
+            option
+                .setName('max_results')
+                .setDescription('Maximum number of results per page (1-10)')
+                .setRequired(false)
+                .setMinValue(1)
+                .setMaxValue(10)
         ),
-    description_full: 'Search for YouTube videos with optional filters for channel and duration. Results are displayed in an embedded message with pagination.',
-    usage: '/youtube-search <query> [channel] [duration]',
+    description_full:
+        'Search for YouTube videos with optional filters for channel, duration, order, type, and max results. Results are displayed in an embedded message with pagination.',
+    usage: '/youtube-search <query> [channel] [duration] [order] [type] [max_results]',
     examples: [
         '/youtube-search query:cats',
         '/youtube-search query:"funny videos" channel:PewDiePie',
-        '/youtube-search query:tutorials duration:long'
+        '/youtube-search query:tutorials duration:long order:viewCount type:episode max_results:10',
     ],
 
     async execute(interaction) {
@@ -57,6 +78,10 @@ module.exports = {
         const channelFilter = interaction.options.getString('channel')
         const durationFilter =
             interaction.options.getString('duration') || 'any'
+        const orderFilter =
+            interaction.options.getString('order') || 'relevance'
+        const maxResults =
+            interaction.options.getInteger('max_results') || pageSize
         let currentPage = 1
         let nextPageToken = ''
         let prevPageToken = ''
@@ -66,9 +91,12 @@ module.exports = {
             const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
             if (match) {
                 let formattedDuration = ''
-                if (match[1]) formattedDuration += `${parseInt(match[1])} hour${parseInt(match[1]) > 1 ? 's' : ''} `
-                if (match[2]) formattedDuration += `${parseInt(match[2])} minute${parseInt(match[2]) > 1 ? 's' : ''} `
-                if (match[3]) formattedDuration += `${parseInt(match[3])} second${parseInt(match[3]) > 1 ? 's' : ''} `
+                if (match[1])
+                    formattedDuration += `${parseInt(match[1])} hour${parseInt(match[1]) > 1 ? 's' : ''} `
+                if (match[2])
+                    formattedDuration += `${parseInt(match[2])} minute${parseInt(match[2]) > 1 ? 's' : ''} `
+                if (match[3])
+                    formattedDuration += `${parseInt(match[3])} second${parseInt(match[3]) > 1 ? 's' : ''} `
                 return formattedDuration.trim()
             } else {
                 return 'N/A'
@@ -82,8 +110,9 @@ module.exports = {
                     part: 'snippet',
                     q: query,
                     type: 'video',
-                    maxResults: pageSize,
+                    maxResults: maxResults,
                     pageToken: nextPageToken || prevPageToken || '',
+                    order: orderFilter,
                 }
 
                 if (channelFilter) {
@@ -95,17 +124,25 @@ module.exports = {
                 }
 
                 const searchResponse = await youtube.search.list(searchParams)
-                const videoIds = searchResponse.data.items.map(item => item.id.videoId).join(',')
+                const videoIds = searchResponse.data.items
+                    .map((item) => item.id.videoId)
+                    .join(',')
 
                 const videoResponse = await youtube.videos.list({
-                    part: 'contentDetails',
-                    id: videoIds
+                    part: 'contentDetails,statistics',
+                    id: videoIds,
                 })
 
-                const videoDetails = videoResponse.data.items.reduce((acc, item) => {
-                    acc[item.id] = item.contentDetails
-                    return acc
-                }, {})
+                const videoDetails = videoResponse.data.items.reduce(
+                    (acc, item) => {
+                        acc[item.id] = {
+                            contentDetails: item.contentDetails,
+                            statistics: item.statistics,
+                        }
+                        return acc
+                    },
+                    {}
+                )
 
                 const results = searchResponse.data
                 nextPageToken = results.nextPageToken || ''
@@ -126,10 +163,23 @@ module.exports = {
                     .setDescription(`Page ${currentPage}`)
 
                 results.items.forEach((item, index) => {
-                    const duration = videoDetails[item.id.videoId] ? formatDuration(videoDetails[item.id.videoId].duration) : 'N/A'
+                    const details = videoDetails[item.id.videoId]
+                    const duration = details
+                        ? formatDuration(details.contentDetails.duration)
+                        : 'N/A'
+                    const views = details
+                        ? parseInt(
+                              details.statistics.viewCount
+                          ).toLocaleString()
+                        : 'N/A'
+                    const likes = details
+                        ? parseInt(
+                              details.statistics.likeCount
+                          ).toLocaleString()
+                        : 'N/A'
                     embed.addFields(
                         {
-                            name: `${(currentPage - 1) * pageSize + index + 1}. ${item.snippet.title}`,
+                            name: `${(currentPage - 1) * maxResults + index + 1}. ${item.snippet.title}`,
                             value: `[Watch Video](https://www.youtube.com/watch?v=${item.id.videoId})`,
                         },
                         {
@@ -147,6 +197,16 @@ module.exports = {
                         {
                             name: 'Duration',
                             value: duration,
+                            inline: true,
+                        },
+                        {
+                            name: 'Views',
+                            value: views,
+                            inline: true,
+                        },
+                        {
+                            name: 'Likes',
+                            value: likes,
                             inline: true,
                         }
                     )
