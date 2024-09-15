@@ -13,7 +13,7 @@ const youtube = google.youtube({
     auth: process.env.YOUTUBE_API,
 })
 
-const pageSize = 5 // Number of results per page
+const pageSize = 3 // Number of results per page
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -177,39 +177,19 @@ module.exports = {
                               details.statistics.likeCount
                           ).toLocaleString()
                         : 'N/A'
-                    embed.addFields(
-                        {
-                            name: `${(currentPage - 1) * maxResults + index + 1}. ${item.snippet.title}`,
-                            value: `[Watch Video](https://www.youtube.com/watch?v=${item.id.videoId})`,
-                        },
-                        {
-                            name: 'Channel',
-                            value: item.snippet.channelTitle,
-                            inline: true,
-                        },
-                        {
-                            name: 'Published',
-                            value: new Date(
-                                item.snippet.publishedAt
-                            ).toLocaleDateString(),
-                            inline: true,
-                        },
-                        {
-                            name: 'Duration',
-                            value: duration,
-                            inline: true,
-                        },
-                        {
-                            name: 'Views',
-                            value: views,
-                            inline: true,
-                        },
-                        {
-                            name: 'Likes',
-                            value: likes,
-                            inline: true,
-                        }
-                    )
+
+                    // Combine information into a single field
+                    const videoInfo =
+                        `**Channel:** ${item.snippet.channelTitle}\n` +
+                        `**Published:** ${new Date(item.snippet.publishedAt).toLocaleDateString()}\n` +
+                        `**Duration:** ${duration}\n` +
+                        `**Views:** ${views}\n` +
+                        `**Likes:** ${likes}`
+
+                    embed.addFields({
+                        name: `${(currentPage - 1) * maxResults + index + 1}. ${item.snippet.title}`,
+                        value: `[Watch Video](https://www.youtube.com/watch?v=${item.id.videoId})\n\n${videoInfo}`,
+                    })
                 })
 
                 // Create buttons based on available page tokens

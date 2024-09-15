@@ -1,3 +1,13 @@
+/**
+ * Generates a random color and displays it along with its hexadecimal code.
+ *
+ * This command creates a Discord embed message that displays a randomly generated
+ * hexadecimal color code and a thumbnail of the color.
+ *
+ * @module commands/utility/random_color
+ * @param {import('discord.js').Interaction} interaction - The Discord interaction object.
+ * @returns {Promise<void>} - A Promise that resolves when the command has completed.
+ */
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 
 module.exports = {
