@@ -21,7 +21,7 @@ module.exports = {
     async execute(interaction) {
         const user = interaction.options.getUser('target') || interaction.user
         const member = await interaction.guild.members.fetch(user.id)
-
+        console.log(member)
         // Early return if member is not found (e.g., left the server)
         if (!member) {
             return interaction.reply({

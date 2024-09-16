@@ -22,71 +22,136 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     {
-                        name: 'Level Roles',
-                        value: './assets/json/levelRoles.json',
+                        name: 'Sub Roles',
+                        value: './assets/json/subRoles.json',
                     },
                     { name: 'Other Roles', value: './assets/json/roles.json' }
                 )
+        )
+        .addIntegerOption((option) =>
+            option
+                .setName('maxsubs')
+                .setDescription('The Max number of subscribers in a role (Only if you choose Sub Roles File)')
+                .setRequired(false)
         ),
     async execute(interaction) {
         const role = interaction.options.getRole('role')
         const fileChoices = interaction.options.getString('file')
+        const maxsubs = interaction.options.getInteger('maxsubs')
 
         fs.readFile(fileChoices, 'utf8', (err, data) => {
-            if (err) {
-                console.error(err)
-                return interaction.reply(
-                    'An error occurred while reading the file.'
-                )
-            }
-
-            let jsonData = {}
-            try {
-                jsonData = JSON.parse(data)
-            } catch (parseError) {
-                console.warn(
-                    'File was empty or contained invalid JSON. Starting with an empty object.'
-                )
-            }
-
-            if (!jsonData.roles) {
-                jsonData.roles = []
-            }
-
-            // Check for Duplicates:
-            const roleExists = jsonData.roles.some(
-                (existingRole) => existingRole.roleID === role.id
-            )
-
-            if (roleExists) {
-                return interaction.reply(
-                    `The role "${role.name}" is already in the data!`
-                )
-            }
-
-            const roleData = {
-                roleID: role.id,
-                roleName: role.name,
-                roleColor: role.color.toString(16),
-            }
-
-            jsonData.roles.push(roleData)
-
-            fs.writeFile(
-                fileChoices,
-                JSON.stringify(jsonData, null, 2),
-                (err) => {
-                    if (err) {
-                        console.error(err)
-                        return interaction.reply(
-                            'An error occurred while writing to the file.'
-                        )
-                    }
-                    interaction.reply(
-                        'Role data successfully added to the file!'
+            if (fileChoices === './assets/json/roles.json') {
+                if (err) {
+                    console.error(err)
+                    return interaction.reply(
+                        'An error occurred while reading the file.'
                     )
                 }
-            )
+
+                let jsonData = {}
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (parseError) {
+                    console.warn(
+                        'File was empty or contained invalid JSON. Starting with an empty object.'
+                    )
+                }
+
+                if (!jsonData.roles) {
+                    jsonData.roles = []
+                }
+
+                // Check for Duplicates:
+                const roleExists = jsonData.roles.some(
+                    (existingRole) => existingRole.roleID === role.id
+                )
+
+                if (roleExists) {
+                    return interaction.reply(
+                        `The role "${role.name}" is already in the data!`
+                    )
+                }
+
+                const roleData = {
+                    roleID: role.id,
+                    roleName: role.name,
+                    roleColor: role.color.toString(16),
+                }
+
+                jsonData.roles.push(roleData)
+
+                fs.writeFile(
+                    fileChoices,
+                    JSON.stringify(jsonData, null, 2),
+                    (err) => {
+                        if (err) {
+                            console.error(err)
+                            return interaction.reply(
+                                'An error occurred while writing to the file.'
+                            )
+                        }
+                        interaction.reply(
+                            'Role data successfully added to the file!'
+                        )
+                    }
+                )
+            } else {
+                if (err) {
+                    console.error(err)
+                    return interaction.reply(
+                        'An error occurred while reading the file.'
+                    )
+                }
+
+                let jsonData = {}
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (parseError) {
+                    console.warn(
+                        'File was empty or contained invalid JSON. Starting with an empty object.'
+                    )
+                }
+
+                if (!jsonData.roles) {
+                    jsonData.roles = []
+                }
+
+                // Check for Duplicates:
+                const roleExists = jsonData.roles.some(
+                    (existingRole) => existingRole.roleID === role.id
+                )
+
+                if (roleExists) {
+                    return interaction.reply(
+                        `The role "${role.name}" is already in the data!`
+                    )
+                }
+
+                const roleData = {
+                    roleID: role.id,
+                    roleName: role.name,
+                    roleColor: role.color.toString(16),
+                    maxSubs: maxsubs
+                }
+
+                jsonData.roles.push(roleData)
+
+                fs.writeFile(
+                    fileChoices,
+                    JSON.stringify(jsonData, null, 2),
+                    (err) => {
+                        if (err) {
+                            console.error(err)
+                            return interaction.reply(
+                                'An error occurred while writing to the file.'
+                            )
+                        }
+                        interaction.reply(
+                            'Role data successfully added to the file!'
+                        )
+                    }
+                )
+            }
         })
     },
 }
