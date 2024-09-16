@@ -16,8 +16,8 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     {
-                        name: 'Level Roles',
-                        value: './assets/json/levelRoles.json',
+                        name: 'Sub Roles',
+                        value: './assets/json/subRoles.json',
                     },
                     { name: 'Other Roles', value: './assets/json/roles.json' }
                 )
@@ -26,39 +26,75 @@ module.exports = {
         const fileChoices = interaction.options.getString('file')
 
         fs.readFile(fileChoices, 'utf8', (err, data) => {
-            if (err) {
-                console.error(err)
-                return interaction.reply(
-                    'An error occurred while reading the role data.'
-                )
+            if (fileChoices === './assets/json/roles.json') {
+                if (err) {
+                    console.error(err)
+                    return interaction.reply(
+                        'An error occurred while reading the role data.'
+                    )
+                }
+
+                let jsonData = {}
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (parseError) {
+                    console.warn('File was empty or contained invalid JSON.')
+                }
+
+                if (!jsonData.roles || jsonData.roles.length === 0) {
+                    return interaction.reply(
+                        'There are no roles stored in the data.'
+                    )
+                }
+
+                const embed = new EmbedBuilder()
+                    .setTitle('Stored Roles')
+                    .setColor('#00FFFF')
+                    .setDescription(
+                        jsonData.roles
+                            .map(
+                                (role, index) =>
+                                    `${index + 1}. **${role.roleName}** (ID: \`${role.roleID}\`, Color: \`${role.roleColor}\`)`
+                            )
+                            .join('\n')
+                    )
+
+                interaction.reply({ embeds: [embed] })
+            } else {
+                if (err) {
+                    console.error(err)
+                    return interaction.reply(
+                        'An error occurred while reading the role data.'
+                    )
+                }
+
+                let jsonData = {}
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (parseError) {
+                    console.warn('File was empty or contained invalid JSON.')
+                }
+
+                if (!jsonData.roles || jsonData.roles.length === 0) {
+                    return interaction.reply(
+                        'There are no roles stored in the data.'
+                    )
+                }
+
+                const embed = new EmbedBuilder()
+                    .setTitle('Stored Roles')
+                    .setColor('#00FFFF')
+                    .setDescription(
+                        jsonData.roles
+                            .map(
+                                (role, index) =>
+                                    `${index + 1}. **${role.roleName}** (ID: \`${role.roleID}\`, Color: \`${role.roleColor}\`, Max Subs: \`${role.maxSubs}\`)`
+                            )
+                            .join('\n')
+                    )
+
+                interaction.reply({ embeds: [embed] })
             }
-
-            let jsonData = {}
-            try {
-                jsonData = JSON.parse(data)
-            } catch (parseError) {
-                console.warn('File was empty or contained invalid JSON.')
-            }
-
-            if (!jsonData.roles || jsonData.roles.length === 0) {
-                return interaction.reply(
-                    'There are no roles stored in the data.'
-                )
-            }
-
-            const embed = new EmbedBuilder()
-                .setTitle('Stored Roles')
-                .setColor('#00FFFF')
-                .setDescription(
-                    jsonData.roles
-                        .map(
-                            (role, index) =>
-                                `${index + 1}. **${role.roleName}** (ID: \`${role.roleID}\`, Color: \`${role.roleColor}\`)`
-                        )
-                        .join('\n')
-                )
-
-            interaction.reply({ embeds: [embed] })
         })
     },
 }

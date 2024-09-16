@@ -25,8 +25,8 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     {
-                        name: 'Level Roles',
-                        value: './assets/json/levelRoles.json',
+                        name: 'Sub Roles',
+                        value: './assets/json/subRoles.json',
                     },
                     { name: 'Other Roles', value: './assets/json/roles.json' }
                 )
@@ -52,57 +52,111 @@ module.exports = {
         const fileChoices = interaction.options.getString('file')
 
         fs.readFile(fileChoices, 'utf8', (err, data) => {
-            if (err) {
-                console.error(err)
-                return interaction.reply(
-                    'An error occurred while reading the file.'
-                )
-            }
-
-            let jsonData = {}
-            try {
-                jsonData = JSON.parse(data)
-            } catch (parseError) {
-                console.warn(
-                    'File was empty or contained invalid JSON. Starting with an empty object.'
-                )
-            }
-
-            if (!jsonData.roles) {
-                jsonData.roles = []
-            }
-
-            const roleIndex = jsonData.roles.findIndex(
-                (existingRole) => existingRole.roleID === role.id
-            )
-            if (roleIndex === -1) {
-                return interaction.reply(
-                    `The role "${role.name}" was not found in the data!`
-                )
-            }
-
-            if (newName) {
-                jsonData.roles[roleIndex].roleName = newName
-            }
-            if (newColor) {
-                jsonData.roles[roleIndex].roleColor = newColor
-            }
-
-            fs.writeFile(
-                fileChoices,
-                JSON.stringify(jsonData, null, 2),
-                (err) => {
-                    if (err) {
-                        console.error(err)
-                        return interaction.reply(
-                            'An error occurred while writing to the file.'
-                        )
-                    }
-                    interaction.reply(
-                        `Role "${role.name}" has been updated in the data!`
+            if (fileChoices === './assets/json/roles.json') {
+                if (err) {
+                    console.error(err)
+                    return interaction.reply(
+                        'An error occurred while reading the file.'
                     )
                 }
-            )
+
+                let jsonData = {}
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (parseError) {
+                    console.warn(
+                        'File was empty or contained invalid JSON. Starting with an empty object.'
+                    )
+                }
+
+                if (!jsonData.roles) {
+                    jsonData.roles = []
+                }
+
+                const roleIndex = jsonData.roles.findIndex(
+                    (existingRole) => existingRole.roleID === role.id
+                )
+                if (roleIndex === -1) {
+                    return interaction.reply(
+                        `The role "${role.name}" was not found in the data!`
+                    )
+                }
+
+                if (newName) {
+                    jsonData.roles[roleIndex].roleName = newName
+                }
+                if (newColor) {
+                    jsonData.roles[roleIndex].roleColor = newColor
+                }
+
+                fs.writeFile(
+                    fileChoices,
+                    JSON.stringify(jsonData, null, 2),
+                    (err) => {
+                        if (err) {
+                            console.error(err)
+                            return interaction.reply(
+                                'An error occurred while writing to the file.'
+                            )
+                        }
+                        interaction.reply(
+                            `Role "${role.name}" has been updated in the data!`
+                        )
+                    }
+                )
+            } else {
+                if (err) {
+                    console.error(err)
+                    return interaction.reply(
+                        'An error occurred while reading the file.'
+                    )
+                }
+
+                let jsonData = {}
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (parseError) {
+                    console.warn(
+                        'File was empty or contained invalid JSON. Starting with an empty object.'
+                    )
+                }
+
+                if (!jsonData.roles) {
+                    jsonData.roles = []
+                }
+
+                const roleIndex = jsonData.roles.findIndex(
+                    (existingRole) => existingRole.roleID === role.id
+                )
+                if (roleIndex === -1) {
+                    return interaction.reply(
+                        `The role "${role.name}" was not found in the data!`
+                    )
+                }
+
+                if (newName) {
+                    jsonData.roles[roleIndex].roleName = newName
+                }
+                if (newColor) {
+                    jsonData.roles[roleIndex].roleColor = newColor
+                }
+
+                fs.writeFile(
+                    fileChoices,
+                    JSON.stringify(jsonData, null, 2),
+                    (err) => {
+                        if (err) {
+                            console.error(err)
+                            return interaction.reply(
+                                'An error occurred while writing to the file.'
+                            )
+                        }
+                        interaction.reply(
+                            `Role "${role.name}" has been updated in the data!`
+                        )
+                    }
+                )
+            }
         })
     },
 }
