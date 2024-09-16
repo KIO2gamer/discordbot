@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const { request } = require('undici')
 const express = require('express')
 const { clientId, clientSecret, port } = require('../../bot_utils/config.json')
@@ -21,17 +21,28 @@ async function handleInteraction(interaction) {
     )
 
     if (hasRole) {
+        const embed = new EmbedBuilder()
+            .setColor('#00FF00')
+            .setTitle('Already Verified')
+            .setDescription('✅ You already have a verified YouTube channel and have been assigned a role!')
+
         await interaction.reply({
-            content:
-                'You already have a verified YouTube channel and have been assigned a role!',
+            embeds: [embed],
             ephemeral: true,
         })
         return
     }
 
-    await interaction.reply(
-        `Please click on this link to verify your YouTube channel: ${authUrl}`
-    )
+    const embed = new EmbedBuilder()
+        .setColor('#0099FF')
+        .setTitle('Verify YouTube Channel')
+        .setDescription(`🔗 Please click on the link below to verify your YouTube channel:`)
+        .addFields({ name: 'Verification Link', value: `[Verify YouTube](${authUrl})` })
+
+    await interaction.reply({
+        embeds: [embed],
+        ephemeral: true
+    })
 }
 
 /**
@@ -113,13 +124,25 @@ async function handleYouTubeData(data, interaction) {
         const role = interaction.guild.roles.cache.get(roleToAssign.roleID)
         await interaction.member.roles.add(role)
 
-        await interaction.followUp(
-            `You have been assigned the "${roleToAssign.roleName}" role!`
-        )
+        const embed = new EmbedBuilder()
+            .setColor('#00FF00')
+            .setTitle('Role Assigned')
+            .setDescription(`🎉 Congratulations! You have been assigned the "${roleToAssign.roleName}" role!`)
+
+        await interaction.followUp({
+            embeds: [embed],
+            ephemeral: true
+        })
     } else {
-        await interaction.followUp(
-            'Your subscriber count does not match any available roles.'
-        )
+        const embed = new EmbedBuilder()
+            .setColor('#FF0000')
+            .setTitle('No Matching Role')
+            .setDescription('❌ Your subscriber count does not match any available roles.')
+
+        await interaction.followUp({
+            embeds: [embed],
+            ephemeral: true
+        })
     }
 }
 
@@ -136,7 +159,48 @@ async function handleVerification(interaction) {
         try {
             const data = await handleOAuth2Token(req, res)
             await handleYouTubeData(data, interaction)
-            res.send('Verification successful! You can close this window.')
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>YouTube Verification</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif
+                            display: flex
+                            justify-content: center
+                            align-items: center
+                            height: 100vh
+                            margin: 0
+                            background-color: #2C2F33
+                            color: #FFFFFF
+                        }
+                        .container {
+                            text-align: center
+                            padding: 2rem
+                            background-color: #23272A
+                            border-radius: 10px
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1)
+                        }
+                        h1 {
+                            color: #7289DA
+                            font-size: 2.5rem
+                        }
+                        p {
+                            font-size: 1.2rem
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>✅ Verification Successful!</h1>
+                        <p>You can now close this window and return to Discord.</p>
+                    </div>
+                </body>
+                </html>
+            `)
 
             // Close the server after sending the response
             if (server) {
@@ -145,8 +209,57 @@ async function handleVerification(interaction) {
             }
         } catch (error) {
             console.error('Error during verification:', error)
-            await interaction.followUp('An error occurred during verification.')
-            res.status(500).send('An error occurred during verification.')
+            const embed = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTitle('Verification Error')
+                .setDescription('❌ An error occurred during verification.')
+
+            await interaction.followUp({
+                embeds: [embed],
+                ephemeral: true
+            })
+            res.status(500).send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Verification Error</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif
+                            display: flex
+                            justify-content: center
+                            align-items: center
+                            height: 100vh
+                            margin: 0
+                            background-color: #2C2F33
+                            color: #FFFFFF
+                        }
+                        .container {
+                            text-align: center
+                            padding: 2rem
+                            background-color: #23272A
+                            border-radius: 10px
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1)
+                        }
+                        h1 {
+                            color: #FF0000
+                            font-size: 2.5rem
+                        }
+                        p {
+                            font-size: 1.2rem
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>❌ Verification Error</h1>
+                        <p>An error occurred during verification. Please try again later.</p>
+                    </div>
+                </body>
+                </html>
+            `)
         }
     })
 
@@ -160,6 +273,7 @@ async function handleVerification(interaction) {
         )
     }
 }
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('verify-youtube')
