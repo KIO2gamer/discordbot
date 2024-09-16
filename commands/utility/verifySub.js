@@ -276,8 +276,11 @@ async function handleVerification(interaction) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('verify-youtube')
-        .setDescription('Verify your YouTube channel and get roles!'),
+        .setName('verify_sub')
+        .setDescription('Verifies the user\'s subscription status'),
+    description_full: 'Verifies the user\'s subscription status.',
+    usage: '/verify_sub',
+    examples: ['/verify_sub'],
     async execute(interaction) {
         await handleInteraction(interaction)
         await handleVerification(interaction)
