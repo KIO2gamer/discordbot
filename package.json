@@ -4,7 +4,7 @@
     "description": "A versatile Discord bot with moderation, entertainment, and utility features.",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js",
+        "start": "node c:\\Users\\KIO2gamer\\OneDrive\\Documents\\discordbot\\commands\\utility\\verifysub.js",
         "dev": "nodemon index.js",
         "test": "test-settings.js"
     },
@@ -12,6 +12,7 @@
         "type": "git",
         "url": "https://github.com/KIO2gamer/discordbot.git"
     },
+    "homepage": "https://kio2gamer.github.io/project-kiyo/",
     "keywords": [
         "discord",
         "bot",

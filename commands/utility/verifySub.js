@@ -11,8 +11,8 @@ const youtubeApiKey = process.env.YOUTUBE_API
  *  @returns {Promise<void>} a promise that resolves when the interaction has been handled.
  */
 async function handleInteraction(interaction) {
-    const redirectUri = `http://localhost:${port}`
-    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20connections`
+    const redirectUri = `https://kio2gamer.github.io/project-kiyo/` // Use your Netlify site URL
+    const authUrl = `https://discord.com/oauth2/authorize?client_id=1155222493079015545&response_type=code&redirect_uri=https%3A%2F%2Fkio2gamer.github.io%2Fproject-kiyo%2F&scope=identify+email+guilds.join+gdm.join+guilds+connections`
 
     // Check if the user already has any of the roles
     const userRoles = interaction.member.roles.cache.map((role) => role.id)
@@ -24,7 +24,9 @@ async function handleInteraction(interaction) {
         const embed = new EmbedBuilder()
             .setColor('#00FF00')
             .setTitle('Already Verified')
-            .setDescription('✅ You already have a verified YouTube channel and have been assigned a role!')
+            .setDescription(
+                '✅ You already have a verified YouTube channel and have been assigned a role!'
+            )
 
         await interaction.reply({
             embeds: [embed],
@@ -36,12 +38,17 @@ async function handleInteraction(interaction) {
     const embed = new EmbedBuilder()
         .setColor('#0099FF')
         .setTitle('Verify YouTube Channel')
-        .setDescription(`🔗 Please click on the link below to verify your YouTube channel:`)
-        .addFields({ name: 'Verification Link', value: `[Verify YouTube](${authUrl})` })
+        .setDescription(
+            `🔗 Please click on the link below to verify your YouTube channel:`
+        )
+        .addFields({
+            name: 'Verification Link',
+            value: `[Verify YouTube](${authUrl})`,
+        })
 
     await interaction.reply({
         embeds: [embed],
-        ephemeral: true
+        ephemeral: true,
     })
 }
 
@@ -64,7 +71,7 @@ async function handleOAuth2Token(req, res) {
                     client_secret: clientSecret,
                     code,
                     grant_type: 'authorization_code',
-                    redirect_uri: `http://localhost:${port}`,
+                    redirect_uri: `https://kio2gamer.github.io/project-kiyo/`, // Use your Netlify site URL
                 }).toString(),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -127,21 +134,25 @@ async function handleYouTubeData(data, interaction) {
         const embed = new EmbedBuilder()
             .setColor('#00FF00')
             .setTitle('Role Assigned')
-            .setDescription(`🎉 Congratulations! You have been assigned the "${roleToAssign.roleName}" role!`)
+            .setDescription(
+                `🎉 Congratulations! You have been assigned the "${roleToAssign.roleName}" role!`
+            )
 
         await interaction.followUp({
             embeds: [embed],
-            ephemeral: true
+            ephemeral: true,
         })
     } else {
         const embed = new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('No Matching Role')
-            .setDescription('❌ Your subscriber count does not match any available roles.')
+            .setDescription(
+                '❌ Your subscriber count does not match any available roles.'
+            )
 
         await interaction.followUp({
             embeds: [embed],
-            ephemeral: true
+            ephemeral: true,
         })
     }
 }
@@ -153,8 +164,10 @@ async function handleYouTubeData(data, interaction) {
  */
 async function handleVerification(interaction) {
     const app = express()
-    let server
+    let server // Declare server variable outside the if block
+    let shutdown = false // Flag to track shutdown
 
+    // Use Netlify's free web server
     app.get('/', async (req, res) => {
         try {
             const data = await handleOAuth2Token(req, res)
@@ -202,10 +215,13 @@ async function handleVerification(interaction) {
                 </html>
             `)
 
+            // Stop listening to the port after successful verification
             // Close the server after sending the response
-            if (server) {
-                server.close()
-                console.log('Server Closed')
+            if (!shutdown) {
+                if (server) {
+                    server.close()
+                    shutdown = true
+                }
             }
         } catch (error) {
             console.error('Error during verification:', error)
@@ -216,7 +232,7 @@ async function handleVerification(interaction) {
 
             await interaction.followUp({
                 embeds: [embed],
-                ephemeral: true
+                ephemeral: true,
             })
             res.status(500).send(`
                 <!DOCTYPE html>
@@ -263,22 +279,26 @@ async function handleVerification(interaction) {
         }
     })
 
+    // Start the server only if the user does not already have the role
     if (
         !interaction.member.roles.cache.some((role) =>
             subRoles.roles.some((r) => r.roleID === role.id)
         )
     ) {
-        server = app.listen(port, () =>
-            console.log(`App listening at http://localhost:${port}`)
-        )
+        server = app.listen(port || 3000, () => {
+            // Use Netlify's PORT or 3000 as default
+            console.log(
+                `App listening at https://kio2gamer.github.io/project-kiyo/`
+            ) // Replace with your Netlify site URL
+        })
     }
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('verify_sub')
-        .setDescription('Verifies the user\'s subscription status'),
-    description_full: 'Verifies the user\'s subscription status.',
+        .setDescription("Verifies the user's subscription status"),
+    description_full: "Verifies the user's subscription status.",
     usage: '/verify_sub',
     examples: ['/verify_sub'],
     async execute(interaction) {
