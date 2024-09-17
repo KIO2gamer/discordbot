@@ -61,7 +61,6 @@
         "pexels": "^1.4.0",
         "translate": "^3.0.0",
         "undici": "^6.19.8",
-        "youtube-search-api": "^1.2.2",
         "youtube-search-without-api-key": "^2.0.1"
     },
     "devDependencies": {
