@@ -1,11 +1,11 @@
 {
-    "name": "Kiyo-Discord-Bot",
+    "name": "kiyo-discord-bot",
     "version": "1.0.0",
     "description": "A versatile Discord bot with moderation, entertainment, and utility features.",
     "main": "index.js",
     "scripts": {
-        "start": "node c:\\Users\\KIO2gamer\\OneDrive\\Documents\\discordbot\\commands\\utility\\verifysub.js",
-        "dev": "nodemon index.js",
+        "start": "node main.js",
+        "dev": "nodemon",
         "test": "test-settings.js"
     },
     "repository": {
