@@ -1,5 +1,11 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const { EmbedBuilder, ChannelType, PermissionsBitField } = require('discord.js')
+const {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    ChannelType,
+    PermissionsBitField,
+} = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler')
+const { getChannelType } = require('../../bot_utils/channelTypes');
 
 module.exports = {
     description_full:
@@ -21,81 +27,73 @@ module.exports = {
     async execute(interaction) {
         const channel = interaction.options.getChannel('channel')
 
-        const channelTypes = {
-            [ChannelType.GuildText]: 'Text',
-            [ChannelType.GuildVoice]: 'Voice',
-            [ChannelType.GuildCategory]: 'Category',
-            [ChannelType.GuildNews]: 'Announcement',
-            [ChannelType.GuildNewsThread]: 'News Thread',
-            [ChannelType.GuildPublicThread]: 'Public Thread',
-            [ChannelType.GuildPrivateThread]: 'Private Thread',
-            [ChannelType.GuildStageVoice]: 'Stage',
-            [ChannelType.GuildForum]: 'Forum',
-        }
+        try {
+            const getPermissions = (channel, guild) => {
+                const permissions = channel.permissionsFor(guild.roles.everyone)
+                if (!permissions) return 'No permissions'
 
-        const getPermissions = (channel, guild) => {
-            const permissions = channel.permissionsFor(guild.roles.everyone)
-            if (!permissions) return 'No permissions'
+                const permsArray = permissions.toArray()
 
-            const permsArray = permissions.toArray()
+                return permsArray.length > 0
+                    ? permsArray
+                          .map(
+                              (perm) =>
+                                  Object.keys(PermissionsBitField.Flags)
+                                      .find(
+                                          (key) =>
+                                              PermissionsBitField.Flags[key] ===
+                                              perm
+                                      )
+                                      ?.replace(/_/g, ' ')
+                                      .toLowerCase() || perm
+                          )
+                          .join(', ')
+                    : 'No permissions'
+            }
 
-            return permsArray.length > 0
-                ? permsArray
-                      .map(
-                          (perm) =>
-                              Object.keys(PermissionsBitField.Flags)
-                                  .find(
-                                      (key) =>
-                                          PermissionsBitField.Flags[key] ===
-                                          perm
-                                  )
-                                  ?.replace(/_/g, ' ')
-                                  .toLowerCase() || perm
-                      )
-                      .join(', ')
-                : 'No permissions'
-        }
-
-        const embed = new EmbedBuilder()
-            .setTitle(`Channel Info: ${channel.name}`)
-            .setColor(interaction.guild.members.me.displayHexColor)
-            .setThumbnail(interaction.guild.iconURL())
-            .addFields(
-                { name: 'ID', value: channel.id, inline: true },
-                {
-                    name: 'Type',
-                    value: channelTypes[channel.type] || 'Unknown',
+            const embed = new EmbedBuilder()
+                .setTitle(`Channel Info: ${channel.name}`)
+                .setColor(interaction.guild.members.me.displayHexColor)
+                .setThumbnail(interaction.guild.iconURL())
+                .addFields(
+                    { name: 'ID', value: channel.id, inline: true },
+                    {
+                        name: 'Type',
+                        value: getChannelType[channel.type] || 'Unknown',
+                        inline: true,
+                    },
+                    {
+                        name: 'Created At',
+                        value: `<t:${Math.floor(channel.createdAt.getTime() / 1000)}>`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Topic',
+                        value: channel.topic || 'No topic set',
+                        inline: false,
+                    },
+                    {
+                        name: 'NSFW',
+                        value: channel.nsfw ? 'Yes' : 'No',
+                        inline: true,
+                    },
+                    {
+                        name: 'Permissions',
+                        value: getPermissions(channel, interaction.guild),
+                        inline: false,
+                    }
+                )
+            if (channel.parent) {
+                embed.addFields({
+                    name: 'Category',
+                    value: channel.parent.name,
                     inline: true,
-                },
-                {
-                    name: 'Created At',
-                    value: `<t:${Math.floor(channel.createdAt.getTime() / 1000)}>`,
-                    inline: true,
-                },
-                {
-                    name: 'Topic',
-                    value: channel.topic || 'No topic set',
-                    inline: false,
-                },
-                {
-                    name: 'NSFW',
-                    value: channel.nsfw ? 'Yes' : 'No',
-                    inline: true,
-                },
-                {
-                    name: 'Permissions',
-                    value: getPermissions(channel, interaction.guild),
-                    inline: false,
-                }
-            )
-        if (channel.parent) {
-            embed.addFields({
-                name: 'Category',
-                value: channel.parent.name,
-                inline: true,
-            })
-        }
+                })
+            }
 
-        await interaction.reply({ embeds: [embed] })
+            await interaction.reply({ embeds: [embed] })
+        } catch (error) {
+            await handleError(interaction, error)
+        }
     },
 }

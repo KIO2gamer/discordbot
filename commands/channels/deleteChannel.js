@@ -1,9 +1,9 @@
 const {
     SlashCommandBuilder,
-    ChannelType,
     PermissionFlagsBits,
     EmbedBuilder,
 } = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler')
 
 module.exports = {
     description_full:
@@ -40,11 +40,7 @@ module.exports = {
 
             await interaction.reply({ embeds: [embed] })
         } catch (error) {
-            console.error(`Error deleting channel: ${error}`)
-            await interaction.reply({
-                content: 'An error occurred while deleting the channel.',
-                ephemeral: true,
-            })
+            await handleError(interaction, error)
         }
     },
 }
