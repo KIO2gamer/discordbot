@@ -168,7 +168,11 @@ async function handleMainMenu(interaction, commandsByCategory, embedFooter) {
         }
 
         if (buttonInteraction.customId === 'show-command-list') {
-            const embed = createEmbedForCommands(commandsByCategory, '#2ecc71')
+            const embed = createEmbedForCommands(
+                commandsByCategory,
+                '📃 Command List',
+                '#2ecc71'
+            )
             await buttonInteraction.update({
                 embeds: [embed],
                 components: [],
@@ -181,34 +185,34 @@ async function handleMainMenu(interaction, commandsByCategory, embedFooter) {
     })
 }
 
-function createEmbedForCommands(commandsByCategory, color) {
+function createEmbedForCommands(commandsByCategory, title, color) {
     const embed = new EmbedBuilder()
         .setColor(color)
-        .setTitle('📃 Kiyo Bot Commands')
+        .setTitle(title)
         .setTimestamp()
 
+    let description = ''
     for (const [category, commands] of commandsByCategory.entries()) {
-        let fieldValue = ''
-
-        commands.forEach((cmd) => {
-            const cmdStr = `</${cmd.name}:${cmd.id}> - ${cmd.description}\n`
-
-            if (fieldValue.length + cmdStr.length <= FIELD_VALUE_MAX_LENGTH) {
-                fieldValue += cmdStr
-            } else {
-                embed.addFields({
-                    name: fieldValue.length > 0 ? '\u200B' : `**${category}**`,
-                    value: fieldValue,
-                })
-                fieldValue = cmdStr
+        if (Array.isArray(commands)) {
+            for (const cmd of commands) {
+                description += `</${cmd.name}:${cmd.id}> `
+                if (description.length > 2048) {
+                    // Limit to 2048 characters per chunk
+                    embed.addFields({
+                        name: `**${category}**`,
+                        value: description,
+                    })
+                    description = ''
+                }
             }
-        })
+        } else {
+            const cmd = commands
+            description += `</${cmd.name}:${cmd.id}> `
+        }
 
-        if (fieldValue.length > 0) {
-            embed.addFields({
-                name: `**${category}**`,
-                value: fieldValue,
-            })
+        if (description.length > 0) {
+            embed.setDescription(description)
+            description = ''
         }
     }
 
