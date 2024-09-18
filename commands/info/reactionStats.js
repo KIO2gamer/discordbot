@@ -1,7 +1,6 @@
 const {
     SlashCommandBuilder,
     EmbedBuilder,
-    ApplicationCommandOptionType,
 } = require('discord.js')
 const moment = require('moment')
 

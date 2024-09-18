@@ -26,7 +26,6 @@ module.exports = {
                 .setDescription('The code to evaluate')
                 .setRequired(true)
         ),
-
     async execute(interaction) {
         // Check if the user has permission to use this command
         if (
