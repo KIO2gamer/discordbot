@@ -1,3 +1,16 @@
+/**
+ * Provides a Discord slash command to search for YouTube videos with optional filters.
+ *
+ * The command allows users to search for YouTube videos by providing a query string, and optionally filter the results by channel, duration, order, and maximum number of results. The results are displayed in an embedded message with pagination controls.
+ *
+ * The command uses the Google YouTube API to fetch the search results and video details, and formats the information into a user-friendly format.
+ *
+ * @module commands/utility/video_search
+ * @example
+ * /youtube-search query:cats
+ * /youtube-search query:"funny videos" channel:PewDiePie
+ * /youtube-search query:tutorials duration:long order:viewCount type:episode max_results:10
+ */
 const {
     SlashCommandBuilder,
     EmbedBuilder,

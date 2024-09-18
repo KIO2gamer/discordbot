@@ -7,7 +7,19 @@ const { EmbedBuilder } = require('discord.js')
  * @param {Error} error - The error that occurred.
  */
 async function handleError(interaction, error) {
-    console.error(error)
+    const chalk = (await import('chalk')).default // Dynamic import
+    const boxen = (await import('boxen')).default // Dynamic import
+
+    // Boxen options
+    const boxOptions = {
+        padding: 1,
+        margin: 1,
+        borderStyle: 'double',
+        borderColor: 'red', // Red border for errors
+        align: 'center',
+    }
+
+    console.error(boxen(chalk.red.bold(`❌ ${error.message}`), boxOptions))
 
     const errorEmbed = new EmbedBuilder()
         .setTitle('An error occurred')

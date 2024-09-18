@@ -1,3 +1,10 @@
+/**
+ * Translates the provided text into the specified target language.
+ *
+ * @param {string} input - The text to translate.
+ * @param {string} targetLang - The target language code (e.g., 'en', 'es', 'fr', 'de', 'ja').
+ * @returns {Promise<{ text: string }>} - The translated text.
+ */
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const translate = require('@iamtraction/google-translate')
 
