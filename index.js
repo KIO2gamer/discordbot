@@ -77,6 +77,7 @@ require('dotenv').config()
     }
 
     const loadCommands = (dir) => {
+        let commandCount = 0
         loadFiles(dir, (filePath) => {
             const command = require(filePath)
             if (command?.data && command?.execute) {
@@ -86,9 +87,7 @@ require('dotenv').config()
                         client.commands.set(alias, command)
                     )
                 }
-                console.log(
-                    chalk.green(`✅ Loaded command: ${command.data.name}`)
-                )
+                commandCount++
             } else {
                 console.warn(
                     chalk.yellow(
@@ -97,17 +96,20 @@ require('dotenv').config()
                 )
             }
         })
+        console.log(chalk.green(`✅ Loaded ${commandCount} commands`))
     }
 
     const loadEvents = (dir) => {
+        let eventCount = 0
         loadFiles(dir, (filePath) => {
             const event = require(filePath)
             const execute = (...args) => event.execute(...args)
             event.once
                 ? client.once(event.name, execute)
                 : client.on(event.name, execute)
-            console.log(chalk.green(`✅ Loaded event: ${event.name}`))
+            eventCount++
         })
+        console.log(chalk.green(`✅ Loaded ${eventCount} events`))
     }
 
     loadCommands(path.join(__dirname, 'commands'))
