@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
-const { clientId, redirectUri } = require('../../discord-oauth2/config.json')
 
 module.exports = {
     description_full:
@@ -11,11 +10,30 @@ module.exports = {
             'Verifies a user by checking if they have a YouTube channel linked to their Discord account.'
         ),
     async execute(interaction) {
-        const authURL = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify+connections`
+        // Check for YouTube ID from localStorage (you might need to integrate this with your bot environment)
+        const youtubeId = await getYoutubeIdFromLocalStorage(
+            interaction.user.id
+        ) // Customize this function to match your environment
+
+        let description = ''
+        if (youtubeId) {
+            description = `You have successfully linked your YouTube account. Your YouTube Channel ID is: ${youtubeId}`
+        } else {
+            description = `You haven't linked your YouTube account yet. Please click [here](${redirectUri}) to verify your account.`
+        }
+
         const embed = new EmbedBuilder()
             .setTitle('Verify Your Account')
-            .setDescription(`Click [here](${authURL}) to verify your account.`)
+            .setDescription(description)
 
         await interaction.reply({ embeds: [embed] })
     },
+}
+
+// Sample function to retrieve YouTube ID (adjust for your environment)
+async function getYoutubeIdFromLocalStorage(userId) {
+    // Here, you would typically fetch from a database, but for demo purposes, we'll assume localStorage
+    // Replace this logic with actual DB fetching logic in production
+    const youtubeId = localStorage.getItem('youtubeId') // Replace with actual data fetching logic in a real environment
+    return youtubeId
 }
