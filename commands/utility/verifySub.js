@@ -35,26 +35,30 @@ module.exports = {
         await interaction.editReply({ embeds: [embed] })
     },
 }
+const axios = require('axios')
 
 async function getAuthCode(message) {
-    const collected = await message.channel.messages.fetch({
-        message: message.id,
-        around: message.id,
-        limit: 1,
-    })
+    const authCode = message.content.split(' ').pop()
 
-    const messageObj = collected.first()
-    const match = messageObj.content.match(/\?code=([\w-]+)/)
-
-    if (!match) {
+    if (!authCode) {
         throw new Error('Could not find authorization code.')
     }
 
-    return match[1]
+    try {
+        const response = await axios.post(
+            'https://discord-bot-verify.netlify.app/.netlify/functions/authLogin',
+            { code: authCode }
+        )
+        return response.data.youtubeId
+    } catch (error) {
+        console.error('Error in getAuthCode:', error)
+        throw new Error('Failed to get YouTube ID.')
+    }
 }
 
 async function getDiscordUserYoutubeId(code) {
-    const authLoginUrl = 'https://discord-bot-verify.netlify.app/.netlify/functions/authLogin'
+    const authLoginUrl =
+        'https://discord-bot-verify.netlify.app/.netlify/functions/authLogin'
     const response = await fetch(authLoginUrl, {
         method: 'POST',
         headers: {
