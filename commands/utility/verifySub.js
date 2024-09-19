@@ -1,5 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const { clientId, redirectUri } = require('../../discord-oauth2/config.json')
+const {
+    getDiscordUserYoutubeId,
+} = require('../../discord-oauth2/functions/authLogin')
+const { v4: uuidv4 } = require('uuid') // Import UUID library for generating unique IDs
 
 module.exports = {
     description_full:
@@ -11,62 +15,70 @@ module.exports = {
             'Verifies a user by checking if they have a YouTube channel linked to their Discord account.'
         ),
     async execute(interaction) {
-        const authURL = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify+connections`
+        const state = uuidv4() // Generate a unique state value
+        const temporaryUrl = `https://your-website.com/verify?state=${state}` // Replace with your website URL
+
+        const authURL = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+            redirectUri
+        )}&response_type=code&scope=identify+connections&state=${state}`
         const embed = new EmbedBuilder()
             .setTitle('Verify Your Account')
             .setDescription(`Click [here](${authURL}) to verify your account.`)
 
-        const response = await interaction.reply({
-            embeds: [embed],
-            fetchReply: true,
-        })
+        await interaction.reply({ embeds: [embed] })
 
-        const authCode = await getAuthCode(response)
-        const youtubeId = await getDiscordUserYoutubeId(authCode)
+        // Set up a listener for the interactionCreate event
+        const interactionListener = interaction.client.on(
+            'interactionCreate',
+            async (newInteraction) => {
+                if (
+                    newInteraction.user.id === interaction.user.id &&
+                    newInteraction.isChatInputCommand() &&
+                    newInteraction.commandName === 'verify'
+                ) {
+                    // User has run the /verify command again (after authorization)
+                    try {
+                        const code = newInteraction.options.getString('code')
+                        const state = newInteraction.options.getString('state')
 
-        if (youtubeId) {
-            embed.setDescription(`Your YouTube ID: ${youtubeId}`)
-        } else {
-            embed.setDescription(
-                'You do not have a YouTube channel linked to your Discord account.'
-            )
-        }
+                        if (!code || !state) {
+                            await newInteraction.reply(
+                                'Please provide both the authorization code and state.'
+                            )
+                            return
+                        }
 
-        await interaction.editReply({ embeds: [embed] })
-    },
-}
-const axios = require('axios')
+                        const youtubeId = await getDiscordUserYoutubeId(
+                            code,
+                            state
+                        )
 
-async function getAuthCode(message) {
-    const authCode = message.content.split(' ').pop()
+                        if (youtubeId) {
+                            await newInteraction.reply(
+                                `Your YouTube ID is: ${youtubeId}`
+                            )
+                        } else {
+                            await newInteraction.reply(
+                                'YouTube connection not found.'
+                            )
+                        }
 
-    if (!authCode) {
-        throw new Error('Could not find authorization code.')
-    }
-
-    try {
-        const response = await axios.post(
-            'https://discord-bot-verify.netlify.app/.netlify/functions/authLogin',
-            { code: authCode }
+                        interaction.client.removeListener(
+                            'interactionCreate',
+                            interactionListener
+                        ) // Remove the listener
+                    } catch (error) {
+                        console.error('Error during verification:', error)
+                        await newInteraction.reply(
+                            'An error occurred during verification.'
+                        )
+                        interaction.client.removeListener(
+                            'interactionCreate',
+                            interactionListener
+                        ) // Remove the listener
+                    }
+                }
+            }
         )
-        return response.data.youtubeId
-    } catch (error) {
-        console.error('Error in getAuthCode:', error)
-        throw new Error('Failed to get YouTube ID.')
-    }
-}
-
-async function getDiscordUserYoutubeId(code) {
-    const authLoginUrl =
-        'https://discord-bot-verify.netlify.app/.netlify/functions/authLogin'
-    const response = await fetch(authLoginUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-    })
-
-    const { youtubeId } = await response.json()
-    return youtubeId
+    },
 }
