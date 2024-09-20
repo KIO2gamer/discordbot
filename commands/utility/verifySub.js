@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const mongoose = require('mongoose')
-const User = require('../../bot_utils/UserConnections') // Import the User model
+const User = require('../../discord-oauth2/UserConnections') // Import the User model
 
 // MongoDB connection string from environment variables
 const mongoUri = process.env.MONGODB_URL
