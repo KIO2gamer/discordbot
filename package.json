@@ -48,6 +48,7 @@
         "discord.js": "^14.16.1",
         "dotenv": "^16.3.1",
         "express": "^4.21.0",
+        "express-session": "^1.18.0",
         "genius-api": "^0.0.2",
         "genius-lyrics": "^4.4.7",
         "googleapis": "^144.0.0",
