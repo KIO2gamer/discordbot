@@ -1,4 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
+const mongoose = require('mongoose')
+const User = require('../../bot_utils/UserConnections') // Import the User model
+
+// MongoDB connection string from environment variables
+const mongoUri = process.env.MONGODB_URL
 
 module.exports = {
     description_full:
@@ -10,10 +15,14 @@ module.exports = {
             'Verifies a user by checking if they have a YouTube channel linked to their Discord account.'
         ),
     async execute(interaction) {
-        // Check for YouTube ID from localStorage (you might need to integrate this with your bot environment)
-        const youtubeId = await getYoutubeIdFromLocalStorage(
-            interaction.user.id
-        ) // Customize this function to match your environment
+        // Connect to MongoDB using Mongoose
+        await mongoose.connect(mongoUri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+
+        const discordUserId = interaction.user.id // Get the Discord user's ID
+        const youtubeId = await getYoutubeId(discordUserId)
 
         let description = ''
         if (youtubeId) {
@@ -27,13 +36,19 @@ module.exports = {
             .setDescription(description)
 
         await interaction.reply({ embeds: [embed] })
+
+        // Close the MongoDB connection
+        mongoose.connection.close()
     },
 }
 
-// Sample function to retrieve YouTube ID (adjust for your environment)
-async function getYoutubeIdFromLocalStorage(userId) {
-    // Here, you would typically fetch from a database, but for demo purposes, we'll assume localStorage
-    // Replace this logic with actual DB fetching logic in production
-    const youtubeId = localStorage.getItem('youtubeId') // Replace with actual data fetching logic in a real environment
-    return youtubeId
+// Fetch YouTube ID from MongoDB using Mongoose
+async function getYoutubeId(discordUserId) {
+    try {
+        const user = await User.findOne({ discordUserId })
+        return user ? user.youtubeId : null
+    } catch (err) {
+        console.error('Error retrieving user from MongoDB:', err)
+        return null
+    }
 }
