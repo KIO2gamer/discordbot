@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const { redirectUri } = require('../../discord-oauth2/config.json')
-const { getYoutubeId } = require('../../discord-oauth2/youtubeIdFetcher')
 
 module.exports = {
     description_full:
