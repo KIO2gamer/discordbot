@@ -4,13 +4,12 @@ const {
     EmbedBuilder,
 } = require('discord.js')
 const ModerationLog = require('../../bot_utils/ModerationLog')
-const { getColor } = require('../../bot_utils/colors')
 
 function createErrorEmbed(title, description, interaction) {
     return new EmbedBuilder()
         .setTitle(title)
         .setDescription(description)
-        .setColor(getColor(Critical))
+        .setColor("Red")
         .setFooter({
             text: `Done by: ${interaction.user.username}`,
             iconURL: `${interaction.user.avatarURL()}`,
@@ -112,7 +111,7 @@ module.exports = {
                         .setDescription(
                             `<@${targetUser.id}> has been warned for reason: \`${reason}\``
                         )
-                        .setColor(getColor(Warning))
+                        .setColor("Orange")
                         .setFooter({
                             text: `Done by: ${interaction.user.username}`,
                             iconURL: `${interaction.user.avatarURL()}`,
