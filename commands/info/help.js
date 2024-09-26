@@ -57,7 +57,7 @@ async function showCommandCategories(interaction) {
             .filter((file) => file.endsWith('.js'))
 
         const commandList = categoryCommands
-            .map((command) => `\`/${command.slice(0, -3)}\``)
+            .map((command) => `</${command.slice(0, -3)}:${command.id}>`)
             .join(', ')
 
         embed.addFields({
@@ -97,7 +97,6 @@ async function showCommandInfo(interaction, commandName) {
 
     return interaction.reply({ embeds: [embed] })
 }
-
 async function searchCommands(interaction, searchQuery) {
     const commands = interaction.client.commands
     const results = commands.filter(
