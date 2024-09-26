@@ -4,6 +4,7 @@ const {
     PermissionFlagsBits,
 } = require('discord.js')
 const ms = require('ms')
+const { handleError } = require('../../bot_utils/errorHandler')
 
 module.exports = {
     description_full:
@@ -30,8 +31,7 @@ module.exports = {
                 .setDescription('The channel to set slowmode in')
                 .setRequired(false)
         )
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
-        .setDMPermission(false),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
     async execute(interaction) {
         const channel =
@@ -83,21 +83,7 @@ module.exports = {
                 ],
             })
         } catch (error) {
-            console.error('Error setting slowmode:', error)
-            await interaction.editReply({
-                embeds: [
-                    new EmbedBuilder()
-                        .setTitle('ERROR')
-                        .setDescription(
-                            'An error occurred while trying to set the slowmode.'
-                        )
-                        .setColor('Red')
-                        .setFooter({
-                            text: `Set by: ${interaction.user.username}`,
-                            iconURL: `${interaction.user.displayAvatarURL()}`,
-                        }),
-                ],
-            })
+            handleError(interaction, error)
         }
     },
 }

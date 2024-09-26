@@ -4,6 +4,7 @@ const {
     PermissionFlagsBits,
     ChannelType,
 } = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler')
 
 module.exports = {
     description_full:
@@ -91,13 +92,7 @@ module.exports = {
                 })
             }
         } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-                .setTitle('ERROR')
-                .setColor('Red')
-                .setDescription(
-                    `An error occurred while trying to unlock the channel: ${error.message}`
-                )
-            await interaction.editReply({ embeds: [errorEmbed] })
+            handleError(interaction, error)
         }
     },
 }

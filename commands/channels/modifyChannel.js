@@ -1,8 +1,9 @@
 const {
     SlashCommandBuilder,
     PermissionsBitField,
-    ChannelType,
+    ChannelType
 } = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler.js')
 
 module.exports = {
     description_full:
@@ -18,7 +19,7 @@ module.exports = {
         '/modifychannel voice channel:voice_channel newname:voice_new permissions:Speak toggle:On role:@role', // Combines name change and permission modification
         '\n',
         '/modifychannel voice channel:text_old newname:text_new permissions:Manage Messages toggle:Off role:@everyone', // Disables "Manage Messages" for everyone in a text channel
-        '\n',
+        '\n'
     ],
     data: new SlashCommandBuilder()
         .setName('modifychannel')
@@ -51,61 +52,61 @@ module.exports = {
                             { name: 'View Channel', value: 'ViewChannel' },
                             {
                                 name: 'Manage Channels',
-                                value: 'ManageChannels',
+                                value: 'ManageChannels'
                             },
                             { name: 'Manage Roles', value: 'ManageRoles' },
                             { name: 'Add Reactions', value: 'AddReactions' },
                             { name: 'Send Messages', value: 'SendMessages' },
                             {
                                 name: 'Send TTS Messages',
-                                value: 'SendTtsMessages',
+                                value: 'SendTtsMessages'
                             },
                             {
                                 name: 'Manage Messages',
-                                value: 'ManageMessages',
+                                value: 'ManageMessages'
                             },
                             { name: 'Embed Links', value: 'EmbedLinks' },
                             { name: 'Attach Files', value: 'AttachFiles' },
                             {
                                 name: 'Read Message History',
-                                value: 'ReadMessageHistory',
+                                value: 'ReadMessageHistory'
                             },
                             {
                                 name: 'Mention Everyone',
-                                value: 'MentionEveryone',
+                                value: 'MentionEveryone'
                             },
                             {
                                 name: 'Use External Emojis',
-                                value: 'UseExternalEmojis',
+                                value: 'UseExternalEmojis'
                             },
                             {
                                 name: 'Manage Webhooks',
-                                value: 'ManageWebhooks',
+                                value: 'ManageWebhooks'
                             },
                             { name: 'Manage Threads', value: 'ManageThreads' },
                             {
                                 name: 'Create Public Threads',
-                                value: 'CreatePublicThreads',
+                                value: 'CreatePublicThreads'
                             },
                             {
                                 name: 'Create Private Threads',
-                                value: 'CreatePrivateThreads',
+                                value: 'CreatePrivateThreads'
                             },
                             {
                                 name: 'Use External Stickers',
-                                value: 'UseExternalStickers',
+                                value: 'UseExternalStickers'
                             },
                             {
                                 name: 'Send Messages In Threads',
-                                value: 'SendMessagesInThreads',
+                                value: 'SendMessagesInThreads'
                             },
                             {
                                 name: 'Use Embedded Activities',
-                                value: 'UseEmbeddedActivities',
+                                value: 'UseEmbeddedActivities'
                             },
                             {
                                 name: 'Send Voice Messages',
-                                value: 'SendVoiceMessages',
+                                value: 'SendVoiceMessages'
                             },
                             { name: 'Send Polls', value: 'SendPolls' }
                         )
@@ -157,7 +158,7 @@ module.exports = {
                             { name: 'View Channel', value: 'ViewChannel' },
                             {
                                 name: 'Manage Channels',
-                                value: 'ManageChannels',
+                                value: 'ManageChannels'
                             },
                             { name: 'Manage Roles', value: 'ManageRoles' },
                             { name: 'Connect', value: 'Connect' },
@@ -168,16 +169,16 @@ module.exports = {
                             { name: 'Use VAD', value: 'UseVAD' },
                             {
                                 name: 'Priority Speaker',
-                                value: 'PrioritySpeaker',
+                                value: 'PrioritySpeaker'
                             },
                             { name: 'Stream', value: 'Stream' },
                             {
                                 name: 'Manage Webhooks',
-                                value: 'ManageWebhooks',
+                                value: 'ManageWebhooks'
                             },
                             {
                                 name: 'Create Instant Invite',
-                                value: 'CreateInstantInvite',
+                                value: 'CreateInstantInvite'
                             }
                         )
                 )
@@ -218,7 +219,7 @@ module.exports = {
         ) {
             return interaction.reply({
                 content: 'I do not have permission to manage channels.',
-                ephemeral: true,
+                ephemeral: true
             })
         }
 
@@ -229,7 +230,7 @@ module.exports = {
         ) {
             return interaction.reply({
                 content: 'You do not have permission to manage channels.',
-                ephemeral: true,
+                ephemeral: true
             })
         }
 
@@ -237,7 +238,7 @@ module.exports = {
             return interaction.reply({
                 content:
                     "Please specify what you'd like to modify (channel name or permissions).",
-                ephemeral: true,
+                ephemeral: true
             })
         }
 
@@ -274,13 +275,17 @@ module.exports = {
                         (toggleChoice === 'on' && isPermissionSet) ||
                         (toggleChoice === 'off' && !isPermissionSet)
                     ) {
-                        return `The permission \`${permissionChoice}\` is already set to \`${toggleChoice.toUpperCase()}\` for role \`${role.name}\`.`
+                        return `The permission \`${permissionChoice}\` is already set to \`${toggleChoice.toUpperCase()}\` for role \`${
+                            role.name
+                        }\`.`
                     }
 
                     await channel.permissionOverwrites.edit(role, {
-                        [permissionFlag]: toggleChoice === 'on',
+                        [permissionFlag]: toggleChoice === 'on'
                     })
-                    return `Permission \`${permissionChoice}\` set to \`${toggleChoice.toUpperCase()}\` for role \`${role.name}\`, `
+                    return `Permission \`${permissionChoice}\` set to \`${toggleChoice.toUpperCase()}\` for role \`${
+                        role.name
+                    }\`, `
                 }
                 return ''
             }
@@ -297,7 +302,7 @@ module.exports = {
                 if (permissionResponse.startsWith('The permission')) {
                     return interaction.reply({
                         content: permissionResponse,
-                        ephemeral: true,
+                        ephemeral: true
                     })
                 } else {
                     response += permissionResponse
@@ -315,7 +320,7 @@ module.exports = {
                 if (permissionResponse.startsWith('The permission')) {
                     return interaction.reply({
                         content: permissionResponse,
-                        ephemeral: true,
+                        ephemeral: true
                     })
                 } else {
                     response += permissionResponse
@@ -324,17 +329,21 @@ module.exports = {
             }
 
             if (updated) {
-                interaction.reply({
+                await interaction.reply({
                     content: response.slice(0, -2),
-                    ephemeral: true,
+                    ephemeral: true
                 })
             }
         } catch (error) {
             console.error('Error modifying channel:', error)
-            interaction.reply({
-                content: 'An error occurred while modifying the channel.',
-                ephemeral: true,
-            })
+            await handleError(
+                interaction,
+                error,
+                await interaction.reply({
+                    content: 'An error occurred while modifying the channel.',
+                    ephemeral: true
+                })
+            )
         }
-    },
+    }
 }

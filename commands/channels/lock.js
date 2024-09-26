@@ -4,6 +4,7 @@ const {
     PermissionFlagsBits,
     ChannelType,
 } = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler')
 
 module.exports = {
     description_full:
@@ -17,7 +18,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('lock')
         .setDescription('Lock a channel')
-        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .addChannelOption((option) =>
             option
@@ -33,7 +33,7 @@ module.exports = {
     async execute(interaction) {
         const channel =
             interaction.options.getChannel('channel') || interaction.channel
-        await interaction.deferReply({ ephemeral: true })
+        const sent = await interaction.deferReply({ ephemeral: true })
 
         // Check if the bot has the required permissions
         if (
@@ -72,7 +72,7 @@ module.exports = {
             })
 
             const lockEmbed = new EmbedBuilder()
-                .setTitle(`${channel.name} has been locked`)
+                .setTitle(`<#${channel.id}> has been locked`)
                 .setColor('Red')
                 .setFooter({
                     text: `Done by: ${interaction.user.username}`,
@@ -93,13 +93,7 @@ module.exports = {
                 })
             }
         } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-                .setTitle('ERROR')
-                .setColor('Red')
-                .setDescription(
-                    `An error occurred while trying to lock the channel: ${error.message}`
-                )
-            await interaction.editReply({ embeds: [errorEmbed] })
+            await handleError(interaction, error, sent)
         }
     },
 }

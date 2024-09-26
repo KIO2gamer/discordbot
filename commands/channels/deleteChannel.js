@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
 } = require('discord.js')
 const { handleError } = require('../../bot_utils/errorHandler')
+const { getChannelType } = require('../../bot_utils/channelTypes')
 
 module.exports = {
     description_full:
@@ -34,7 +35,7 @@ module.exports = {
                 .setTitle('Channel Deleted!')
                 .setColor('Red')
                 .setDescription(
-                    `The channel ${channel.id} has been successfully deleted.`
+                    `The ${getChannelType(channel)} ${channel.id} has been successfully deleted.`
                 )
                 .setTimestamp()
 

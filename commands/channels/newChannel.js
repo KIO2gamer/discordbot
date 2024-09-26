@@ -2,8 +2,10 @@ const {
     SlashCommandBuilder,
     ChannelType,
     PermissionFlagsBits,
-    EmbedBuilder,
+    EmbedBuilder
 } = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler')
+const { getChannelType } = require('../../bot_utils/channelTypes')
 
 module.exports = {
     description_full:
@@ -12,7 +14,7 @@ module.exports = {
     examples: [
         '/new_channel name:text_channel type:Text', // Creates a simple text channel named "text_channel"
         '/new_channel name:VIP Room type:Text category:Chat', // Creates a text channel named "VIP Room" under the "Chat" category
-        '/new_channel name:News type:Announcement category:Main topic:Get all updates of the server!!!', // Creates an announcement channel with a topic
+        '/new_channel name:News type:Announcement category:Main topic:Get all updates of the server!!!' // Creates an announcement channel with a topic
     ],
     data: new SlashCommandBuilder()
         .setName('new_channel')
@@ -65,40 +67,28 @@ module.exports = {
                 name: name,
                 type: type,
                 parent: category,
-                topic: topic,
+                topic: topic
             })
-
-            let channelTypeName = ''
-            if (newChannel.type === ChannelType.GuildCategory) {
-                channelTypeName = 'Category'
-            } else if (newChannel.type === ChannelType.GuildText) {
-                channelTypeName = 'Text'
-            } else if (newChannel.type === ChannelType.GuildVoice) {
-                channelTypeName = 'Voice'
-            } else if (newChannel.type === ChannelType.GuildAnnouncement) {
-                channelTypeName = 'Announcement'
-            } else if (newChannel.type === ChannelType.GuildStageVoice) {
-                channelTypeName = 'Stage'
-            } else if (newChannel.type === ChannelType.GuildForum) {
-                channelTypeName = 'Forum'
-            }
 
             const embed = new EmbedBuilder()
                 .setTitle('Channel Created!')
                 .setColor('Green')
                 .setDescription(
-                    `The ${channelTypeName} channel <#${newChannel.id}> has been successfully created.`
+                    `The ${getChannelType(newChannel)} channel <#${
+                        newChannel.id
+                    }> has been successfully created.`
                 )
                 .setTimestamp()
 
             await interaction.reply({ embeds: [embed] })
         } catch (error) {
-            console.log(error)
-            console.error(`Error creating channel: ${error}`)
-            await interaction.reply({
-                content: 'An error occurred while creating the channel.',
-                ephemeral: true,
-            })
+            handleError(
+                interaction, error,
+                await interaction.reply({
+                    content: 'An error occurred while creating the channel.',
+                    ephemeral: true
+                })
+            )
         }
-    },
+    }
 }

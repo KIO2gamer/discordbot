@@ -1,27 +1,26 @@
-const { ChannelType } = require('discord.js')
+const channelTypes = {
+    0: 'Text',
+    2: 'Voice',
+    4: 'Category',
+    5: 'Announcement',
+    10: 'News Thread',
+    11: 'Public Thread',
+    12: 'Private Thread',
+    13: 'Stage',
+    15: 'Forum',
+}
 
 /**
- * Gets the channel type as a string.
+ * Returns the human-readable name for the given Discord channel type.
  *
- * @param {import('discord.js').Channel} channel - The Discord channel object.
- * @returns {string} - The channel type as a string.
+ * @param {Object} channel - The Discord channel object.
+ * @returns {string} The human-readable name for the channel type, or 'Unknown' if the type is not recognized.
  */
 function getChannelType(channel) {
-    const channelTypes = {
-        [ChannelType.GuildText]: 'Text',
-        [ChannelType.GuildVoice]: 'Voice',
-        [ChannelType.GuildCategory]: 'Category',
-        [ChannelType.GuildAnnouncement]: 'Announcement',
-        [ChannelType.AnnouncementThread]: 'News Thread',
-        [ChannelType.PublicThread]: 'Public Thread',
-        [ChannelType.PrivateThread]: 'Private Thread',
-        [ChannelType.GuildStageVoice]: 'Stage',
-        [ChannelType.GuildForum]: 'Forum',
-    }
-
     return channelTypes[channel.type] || 'Unknown'
 }
 
 module.exports = {
     getChannelType,
+    channelTypes
 }

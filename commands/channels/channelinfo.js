@@ -2,10 +2,10 @@ const {
     SlashCommandBuilder,
     EmbedBuilder,
     ChannelType,
-    PermissionsBitField,
+    PermissionsBitField
 } = require('discord.js')
 const { handleError } = require('../../bot_utils/errorHandler')
-const { getChannelType } = require('../../bot_utils/channelTypes');
+const { getChannelType } = require('../../bot_utils/channelTypes')
 
 module.exports = {
     description_full:
@@ -13,7 +13,7 @@ module.exports = {
     usage: '/channelinfo <channel>',
     examples: [
         '/channelinfo #general',
-        '/channelinfo 123456789012345678 (channel ID)',
+        '/channelinfo 123456789012345678 (channel ID)'
     ],
     data: new SlashCommandBuilder()
         .setName('channelinfo')
@@ -59,35 +59,37 @@ module.exports = {
                     { name: 'ID', value: channel.id, inline: true },
                     {
                         name: 'Type',
-                        value: getChannelType[channel.type] || 'Unknown',
-                        inline: true,
+                        value: getChannelType(channel),
+                        inline: true
                     },
                     {
                         name: 'Created At',
-                        value: `<t:${Math.floor(channel.createdAt.getTime() / 1000)}>`,
-                        inline: true,
+                        value: `<t:${Math.floor(
+                            channel.createdAt.getTime() / 1000
+                        )}>`,
+                        inline: true
                     },
                     {
                         name: 'Topic',
                         value: channel.topic || 'No topic set',
-                        inline: false,
+                        inline: false
                     },
                     {
                         name: 'NSFW',
                         value: channel.nsfw ? 'Yes' : 'No',
-                        inline: true,
+                        inline: true
                     },
                     {
                         name: 'Permissions',
                         value: getPermissions(channel, interaction.guild),
-                        inline: false,
+                        inline: false
                     }
                 )
             if (channel.parent) {
                 embed.addFields({
                     name: 'Category',
                     value: channel.parent.name,
-                    inline: true,
+                    inline: true
                 })
             }
 
@@ -95,5 +97,5 @@ module.exports = {
         } catch (error) {
             await handleError(interaction, error)
         }
-    },
+    }
 }
