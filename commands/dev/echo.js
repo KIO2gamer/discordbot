@@ -2,8 +2,9 @@ const {
     SlashCommandBuilder,
     ChannelType,
     EmbedBuilder,
-    PermissionFlagsBits,
+    PermissionFlagsBits
 } = require('discord.js')
+const { handleError } = require('../../bot_utils/errorHandler')
 
 module.exports = {
     description_full:
@@ -11,7 +12,7 @@ module.exports = {
     usage: '/echo <input:text_to_echo> <channel:channel> [embed:true/false]',
     examples: [
         '/echo input:"Hello there!" channel:#general',
-        '/echo input:"Important announcement!" channel:#announcements embed:true',
+        '/echo input:"Important announcement!" channel:#announcements embed:true'
     ],
     data: new SlashCommandBuilder()
         .setName('echo')
@@ -50,7 +51,7 @@ module.exports = {
         ) {
             return interaction.reply({
                 content: `I don't have permission to send messages in ${channel}.`,
-                ephemeral: true,
+                ephemeral: true
             })
         }
 
@@ -60,12 +61,6 @@ module.exports = {
                     .setColor('#0099ff')
                     .setTitle(`Echoed by ${interaction.user.tag}`)
                     .setDescription(input)
-                    .setFooter({
-                        text: `Echoed by ${interaction.user.tag}`,
-                        iconURL: interaction.user.displayAvatarURL({
-                            dynamic: true,
-                        }),
-                    })
                     .setTimestamp()
 
                 await channel.send({ embeds: [echoEmbed] })
@@ -77,14 +72,18 @@ module.exports = {
 
             await interaction.reply({
                 content: `Message echoed successfully in ${channel}.`,
-                ephemeral: true,
+                ephemeral: true
             })
         } catch (error) {
-            console.error('Error sending echo message:', error)
-            await interaction.reply({
-                content: 'There was an error trying to execute that command.',
-                ephemeral: true,
-            })
+            handleError(
+                interaction,
+                error,
+                await interaction.reply({
+                    content:
+                        'There was an error trying to execute that command.',
+                    ephemeral: true
+                })
+            )
         }
-    },
+    }
 }

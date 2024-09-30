@@ -1,4 +1,3 @@
-// models/ModerationLog.js
 const mongoose = require('mongoose')
 
 const moderationLogSchema = new mongoose.Schema({

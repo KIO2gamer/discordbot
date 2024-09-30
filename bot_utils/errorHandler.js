@@ -30,7 +30,7 @@ async function handleError(interaction, error, sent) {
         .setColor('Red')
         .setTimestamp()
 
-    await sent.edit({ embeds: [errorEmbed], ephemeral: true }) // Edit the initial message
+    await interaction.reply({ embeds: [errorEmbed], ephemeral: true }) // Edit the initial message
 }
 
 module.exports = {
