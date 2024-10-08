@@ -32,14 +32,12 @@ const client = new Client({
 client.commands = new Collection()
 
 const loadFiles = (dir, fileAction) => {
-    console.log(`Loading files from directory: ${dir}`) // Log the directory being loaded
     fs.readdirSync(dir).forEach((file) => {
         const filePath = path.join(dir, file)
         const stat = fs.statSync(filePath)
         if (stat.isDirectory()) {
             loadFiles(filePath, fileAction)
         } else if (file.endsWith('.js')) {
-            console.log(`Loading file: ${filePath}`) // Log each file loaded
             fileAction(filePath)
         }
     })
@@ -51,15 +49,14 @@ const loadCommands = (dir) => {
         const command = require(filePath)
         if (command?.data && command?.execute) {
             client.commands.set(command.data.name, command)
-            console.log(`Command loaded: ${command.data.name}`) // Log each command loaded
             if (command.data.aliases) {
                 command.data.aliases.forEach((alias) => {
                     client.commands.set(alias, command)
-                    console.log(`Alias loaded: ${alias}`) // Log each alias loaded
                 })
             }
         }
     })
+    console.log('All Commands Loaded Successfully!!!')
 }
 
 const loadEvents = (dir) => {
@@ -70,8 +67,8 @@ const loadEvents = (dir) => {
         event.once
             ? client.once(event.name, execute)
             : client.on(event.name, execute)
-        console.log(`Event loaded: ${event.name}`) // Log each event loaded
     })
+    console.log('Events loaded successfully!!!')
 }
 
 loadCommands(path.join(__dirname, 'commands'))
