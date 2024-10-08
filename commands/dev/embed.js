@@ -58,7 +58,7 @@ module.exports = {
             } else if (embedType === 'all_roles_info') {
                 await interaction.channel.send({
                     embeds: [
-                        embeds.level_roles,
+                        //embeds.level_roles,
                         embeds.booster_perks,
                         embeds.other_roles
                     ]
@@ -72,7 +72,7 @@ module.exports = {
                 await interaction.channel.send({
                     embeds: [
                         embeds.welcome,
-                        embeds.level_roles,
+                        //embeds.level_roles,
                         embeds.booster_perks,
                         embeds.other_roles,
                         embeds.forms,
