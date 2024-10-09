@@ -11,7 +11,7 @@ const {
 } = require('discord.js')
 require('dotenv').config()
 
-const { CLIENT_ID, DISCORD_TOKEN, MONGODB_URL } = process.env
+const { CLIENT_ID, DISCORD_TOKEN, MONGODB_URI } = process.env
 const GUILD_IDS = process.env.GUILD_IDS ? process.env.GUILD_IDS.split(',') : []
 
 console.log('Starting bot...') // Log the start of the bot
@@ -78,7 +78,7 @@ const connectToMongoDB = async () => {
     console.log('Connecting to MongoDB...') // Log MongoDB connection attempt
     try {
         mongoose.set('strictQuery', false)
-        await mongoose.connect(MONGODB_URL)
+        await mongoose.connect(MONGODB_URI)
         console.log('Connected to MongoDB') // Log successful connection
     } catch (error) {
         console.error(`MongoDB connection failed: ${error.message}`)
