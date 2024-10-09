@@ -5,6 +5,19 @@ const {
 } = require('discord.js')
 const { handleError } = require('../../bot_utils/errorHandler')
 
+/**
+ * 
+ * 
+ * 
+ * If anyone can probably make the level_roles better, it would be nice.
+ * Also, if someone can help me figure out a optimal solution
+ * or send me some more info for the ranking system, 
+ * just contact me on discord as "@kio2gamer".
+ * 
+ * 
+ * 
+ */
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('embed')
