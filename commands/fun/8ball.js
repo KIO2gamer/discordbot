@@ -35,7 +35,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setDescription(
-                `# Question: ${question}\nAnswer: ***${responses[Math.floor(Math.random() * responses.length)]}***`
+                `## **Question:** ${question}\n**Answer:** ${responses[Math.floor(Math.random() * responses.length)]}`
             )
             .setColor('#00ff00')
             .setFooter({
