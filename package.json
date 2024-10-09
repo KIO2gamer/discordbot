@@ -10,7 +10,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/KIO2gamer/discordbot.git"
+        "url": "git+https://github.com/KIO2gamer/discordbot.git"
     },
     "homepage": "https://kio2gamer.github.io/project-kiyo/",
     "keywords": [
@@ -52,6 +52,9 @@
         "mongoose": "^8.0.3",
         "ms": "^2.1.3",
         "node-cache": "^5.1.2",
-        "nodemon": "^3.1.3"
+        "nodemon": "^3.1.7"
+    },
+    "bugs": {
+        "url": "https://github.com/KIO2gamer/discordbot/issues"
     }
 }
