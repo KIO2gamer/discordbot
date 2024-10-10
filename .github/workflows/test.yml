@@ -24,6 +24,8 @@ jobs:
               run: node test-settings.js > $GITHUB_STEP_SUMMARY
               env:
                   DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  MONGODB_URL: ${{ secrets.MONGODB_URI }}
+                  MONGODB_URI: ${{ secrets.MONGODB_URI }}
                   CLIENT_ID: ${{ secrets.CLIENT_ID }}
+                  GUILD_IDS: ${{ secrets.GUILD_IDS }}
+                  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
                   # Add more secrets as needed

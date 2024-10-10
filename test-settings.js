@@ -51,7 +51,7 @@ const { Client, GatewayIntentBits } = require('discord.js')
     client
         .login(process.env.DISCORD_TOKEN)
         .then(() => {
-            printMessage('🔐 Login successful!', 'success')
+            printMessage(`🔐 Login successful! ${process.env.DISCORD_TOKEN}\n${process.env.CLIENT_ID}\n${process.env.MONGODB_URI}\n${process.env.GUILD_IDS}\n${process.env.CLIENT_SECRET}`, 'success')
         })
         .catch((error) => {
             printMessage(`❌ Login failed: ${error.message}`, 'error')
