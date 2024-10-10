@@ -62,12 +62,19 @@ module.exports = {
             })
             await interaction.channel.delete()
         } catch (error) {
-            console.error('Error closing ticket channel:', error)
-            await interaction.reply({
-                content:
-                    'There was an error closing the ticket. Please try again later.',
-                ephemeral: true,
-            })
+            console.error('Error closing ticket channel:', error.message)
+            if (error.message.includes('Cannot send messages')) {
+                interaction.reply({
+                    content: 'I cannot send messages to that user as their DMs are turned off.',
+                    ephemeral: true,
+                })
+            }
+            else {
+                interaction.reply({
+                    content: 'An error occurred while closing the ticket.',
+                    ephemeral: true,
+                })
+            }
         }
     },
 }

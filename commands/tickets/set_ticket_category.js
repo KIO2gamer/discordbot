@@ -1,14 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js')
-const mongoose = require('mongoose')
-
-// Define the schema for the ticket configuration
-const TicketConfigSchema = new mongoose.Schema({
-    guildId: String,
-    ticketCategoryId: String
-})
-
-// Create the model
-const TicketConfig = mongoose.model('TicketConfig', TicketConfigSchema)
+const TicketConfig = require('./../../bot_utils/ticketConfig');
 
 module.exports = {
     description_full:

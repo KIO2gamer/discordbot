@@ -1,12 +1,5 @@
-/**
- * Handles the interaction when a user clicks the "Open Ticket" button.
- *
- * This function reads the ticket category ID from a configuration file, creates a new ticket channel in the specified category, and sends a message to the user and the ticket channel.
- *
- * @param {import('discord.js').Interaction} interaction - The interaction object representing the button click event.
- */
-const fs = require('fs')
 const { Events } = require('discord.js')
+const TicketConfig = require('./../bot_utils/ticketConfig');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -15,11 +8,9 @@ module.exports = {
 
         if (interaction.customId === 'open-ticket') {
             try {
-                // Read the ticket category ID from the config file
-                const config = JSON.parse(
-                    fs.readFileSync('./assets/json/ticketConfig.json')
-                )
-                const ticketCategoryId = config.ticketCategoryId
+                // Fetch the ticket category ID from the database
+                const config = await TicketConfig.findOne()
+                const ticketCategoryId = config ? config.ticketCategoryId : null
 
                 // Check if the category ID is set
                 if (!ticketCategoryId) {
