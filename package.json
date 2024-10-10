@@ -1,6 +1,6 @@
 {
     "name": "kiyo-discord-bot",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A versatile Discord bot with moderation, entertainment, and utility features.",
     "main": "index.js",
     "scripts": {
@@ -49,10 +49,12 @@
         "he": "^1.2.0",
         "mathjs": "^13.1.1",
         "moment": "^2.30.1",
-        "mongoose": "^8.0.3",
+        "mongoose": "^8.7.1",
         "ms": "^2.1.3",
         "node-cache": "^5.1.2",
-        "nodemon": "^3.1.7"
+        "nodemon": "^3.1.7",
+        "punycode": "^2.3.1",
+        "uri-js": "^4.4.1"
     },
     "bugs": {
         "url": "https://github.com/KIO2gamer/discordbot/issues"
