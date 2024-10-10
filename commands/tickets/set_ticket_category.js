@@ -1,5 +1,14 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js')
-const fs = require('fs')
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js')
+const mongoose = require('mongoose')
+
+// Define the schema for the ticket configuration
+const TicketConfigSchema = new mongoose.Schema({
+    guildId: String,
+    ticketCategoryId: String
+})
+
+// Create the model
+const TicketConfig = mongoose.model('TicketConfig', TicketConfigSchema)
 
 module.exports = {
     description_full:
@@ -15,16 +24,24 @@ module.exports = {
                 .setName('category')
                 .setDescription('The category to use for new tickets.')
                 .setRequired(true)
+                .addChannelTypes(ChannelType.GuildCategory)
         ),
     async execute(interaction) {
         const category = interaction.options.getChannel('category')
+        const guildId = interaction.guild.id
 
-        const config = { ticketCategoryId: category.id }
-        fs.writeFileSync(
-            './assets/json/ticketConfig.json',
-            JSON.stringify(config)
-        )
+        try {
+            // Find and update the document, or create a new one if it doesn't exist
+            await TicketConfig.findOneAndUpdate(
+                { guildId: guildId },
+                { ticketCategoryId: category.id },
+                { upsert: true, new: true }
+            )
 
-        interaction.reply(`Ticket category set to: ${category}`)
+            await interaction.reply(`Ticket category set to: ${category}`)
+        } catch (error) {
+            console.error('Error updating ticket category:', error)
+            await interaction.reply('An error occurred while setting the ticket category.')
+        }
     },
 }
