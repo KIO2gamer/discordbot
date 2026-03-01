@@ -21,28 +21,28 @@ Quick reference for all 100 Project Kiyo Discord bot commands organized by categ
 
 Administrator commands for server setup and management.
 
-| Command              | Description                                   | Permission    |
-| -------------------- | --------------------------------------------- | ------------- |
-| `/cleardb`           | Clear all database records (use with caution) | Administrator |
-| `/clearhistory`      | Clear chat history                            | Administrator |
-| `/customadd`         | Add custom command                            | Administrator |
-| `/customdelete`      | Delete custom command                         | Administrator |
-| `/customedit`        | Edit existing custom command                  | Administrator |
-| `/customlist`        | List all custom commands                      | Administrator |
-| `/custompreview`     | Preview custom command                        | Administrator |
-| `/customrun`         | Execute custom command                        | Administrator |
-| `/deletechannel`     | Delete a channel                              | Administrator |
-| `/embed`             | Create rich embed message                     | Administrator |
-| `/fetchembed`        | Fetch and reuse embed data                    | Administrator |
-| `/imageheaders`      | Manage channel headers with images            | Administrator |
-| `/modifychannel`     | Modify channel settings                       | Administrator |
-| `/newchannel`        | Create new channel                            | Administrator |
-| `/reloadcmds`        | Reload all commands                           | Administrator |
-| `/setaichatchannel`  | Set channel for AI chatbot                    | Administrator |
-| `/setcmdperms`       | Set command permissions                       | Administrator |
-| `/setlogchannel`     | Set moderation log channel                    | Administrator |
-| `/setmsglogschannel` | Set message logs channel                      | Administrator |
-| `/welcomesettings`   | Configure welcome messages                    | Administrator |
+| Command                 | Description                                   | Permission    |
+| ----------------------- | --------------------------------------------- | ------------- |
+| `/clear_db`             | Clear all database records (use with caution) | Administrator |
+| `/clear_history`        | Clear chat history                            | Administrator |
+| `/custom add`           | Add custom command                            | Administrator |
+| `/custom delete`        | Delete custom command                         | Administrator |
+| `/custom edit`          | Edit existing custom command                  | Administrator |
+| `/custom list`          | List all custom commands                      | Administrator |
+| `/custom preview`       | Preview custom command                        | Administrator |
+| `/custom run`           | Execute custom command                        | Administrator |
+| `/delete_channel`       | Delete a channel                              | Administrator |
+| `/embed`                | Create rich embed message                     | Administrator |
+| `/fetch_embed_data`     | Fetch and reuse embed data                    | Administrator |
+| `/image_headers`        | Manage channel headers with images            | Administrator |
+| `/modifychannel`        | Modify channel settings                       | Administrator |
+| `/new_channel`          | Create new channel                            | Administrator |
+| `/reload`               | Reload all commands                           | Administrator |
+| `/set_ai_chat_channel`  | Set channel for AI chatbot                    | Administrator |
+| `/set_cmd_perms`        | Set command permissions                       | Administrator |
+| `/setlogchannel`        | Set moderation log channel                    | Administrator |
+| `/set_msg_logs_channel` | Set message logs channel                      | Administrator |
+| `/welcomesettings`      | Configure welcome messages                    | Administrator |
 
 ---
 
@@ -53,13 +53,12 @@ Commands using external APIs and services.
 | Command             | Description                                | Permission    |
 | ------------------- | ------------------------------------------ | ------------- |
 | `/ask`              | Ask Google Generative AI (Gemini)          | @everyone     |
-| `/getytsubscribers` | Get YouTube channel subscriber count       | @everyone     |
 | `/google`           | Search Google                              | @everyone     |
 | `/photo`            | Search and display photos                  | @everyone     |
-| `/testysetup`       | Verify YouTube API setup                   | Administrator |
+| `/test_yt_setup`    | Verify YouTube API setup                   | Administrator |
 | `/weather`          | Get weather information                    | @everyone     |
-| `/ytsubrole`        | Get role based on YouTube subscriber count | @everyone     |
-| `/ytvideosearch`    | Search YouTube videos                      | @everyone     |
+| `/get_yt_sub_role`  | Get role based on YouTube subscriber count | @everyone     |
+| `/youtube search`   | Search YouTube videos                      | @everyone     |
 
 ---
 
@@ -67,19 +66,19 @@ Commands using external APIs and services.
 
 Games and entertainment commands.
 
-| Command           | Description                  | Permission |
-| ----------------- | ---------------------------- | ---------- |
-| `/8ball`          | Magic 8-ball fortune telling | @everyone  |
-| `/coinflip`       | Flip a coin                  | @everyone  |
-| `/funcmds`        | List fun commands            | @everyone  |
-| `/guessthenumber` | Guess number game            | @everyone  |
-| `/hangman`        | Hangman word game            | @everyone  |
-| `/lyricwhiz`      | Song lyrics guessing game    | @everyone  |
-| `/meme`           | Get random meme              | @everyone  |
-| `/roll`           | Roll dice (1d6 or custom)    | @everyone  |
-| `/rpsgame`        | Rock-Paper-Scissors game     | @everyone  |
-| `/trivia`         | Answer trivia questions      | @everyone  |
-| `/unscramble`     | Unscramble word game         | @everyone  |
+| Command             | Description                  | Permission |
+| ------------------- | ---------------------------- | ---------- |
+| `/8ball`            | Magic 8-ball fortune telling | @everyone  |
+| `/coin_flip`        | Flip a coin                  | @everyone  |
+| `/fun`              | List fun commands            | @everyone  |
+| `/guess_the_number` | Guess number game            | @everyone  |
+| `/hangman`          | Hangman word game            | @everyone  |
+| `/lyricwhiz`        | Song lyrics guessing game    | @everyone  |
+| `/meme`             | Get random meme              | @everyone  |
+| `/roll`             | Roll dice (1d6 or custom)    | @everyone  |
+| `/rpsls`          | Rock-Paper-Scissors game     | @everyone  |
+| `/trivia`           | Answer trivia questions      | @everyone  |
+| `/unscramble`       | Unscramble word game         | @everyone  |
 
 ---
 
@@ -90,17 +89,17 @@ Look up information about users, servers, and bot.
 | Command          | Description                       | Permission |
 | ---------------- | --------------------------------- | ---------- |
 | `/avatar`        | Display user or server avatar     | @everyone  |
-| `/botinfo`       | Show bot information              | @everyone  |
-| `/channelinfo`   | Get channel details               | @everyone  |
+| `/bot_info`      | Show bot information              | @everyone  |
+| `/channel_info`  | Get channel details               | @everyone  |
 | `/credits`       | Show bot credits                  | @everyone  |
-| `/emojiinfo`     | Get emoji information             | @everyone  |
-| `/gameinfo`      | Get game information              | @everyone  |
+| `/emoji_info`    | Get emoji information             | @everyone  |
+| `/game_info`     | Get game information              | @everyone  |
 | `/help`          | Show all commands or command help | @everyone  |
-| `/minecraftskin` | Display Minecraft skin            | @everyone  |
-| `/reactionstats` | Show reaction statistics          | @everyone  |
+| `/minecraft`     | Display Minecraft skin            | @everyone  |
+| `/reaction_stats`| Show reaction statistics          | @everyone  |
 | `/rule`          | Display server rules              | @everyone  |
 | `/server`        | Show server information           | @everyone  |
-| `/userinfo`      | Display user information          | @everyone  |
+| `/user_info`     | Display user information          | @everyone  |
 
 ---
 
@@ -110,10 +109,9 @@ XP and leveling system commands.
 
 | Command          | Description             | Permission    |
 | ---------------- | ----------------------- | ------------- |
-| `/giverxp`       | Award XP to user        | Administrator |
 | `/leaderboard`   | Show XP leaderboard     | @everyone     |
-| `/myxp`          | Check your XP and level | @everyone     |
-| `/setrequiredxp` | Set XP per level        | Administrator |
+| `/level`         | Check your XP and level | @everyone     |
+| `/levelsettings` | Manage XP               | Administrator |
 
 ---
 
@@ -131,7 +129,7 @@ Server moderation and management commands.
 | `/automod spam`     | Configure spam detection   | Administrator |
 | `/automod status`   | Show moderation status     | Administrator |
 | `/ban`              | Ban user from server       | Moderator     |
-| `/channels`         | Manage channels            | Moderator     |
+| `/channel`         | Manage channels            | Moderator     |
 | `/kick`             | Kick user from server      | Moderator     |
 | `/lockchannel`      | Lock channel (read-only)   | Moderator     |
 | `/mute`             | Mute user in voice         | Moderator     |
