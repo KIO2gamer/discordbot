@@ -390,7 +390,7 @@ const initializeBot = async () => {
         // Initialize and start status rotator
         Logger.log("BOT", "→ Starting status rotator...", "info");
         client.statusRotator = new StatusRotator(client);
-        client.statusRotator.start(30000); // Rotate every 30 seconds
+        client.statusRotator.start(60000); // Rotate every 60 seconds
         Logger.success("✓ Status rotator initialized");
 
         // Configure logger with Discord client

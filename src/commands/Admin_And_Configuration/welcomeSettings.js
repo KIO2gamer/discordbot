@@ -11,6 +11,7 @@ const Logger = require("../../utils/logger");
 const { GuildSettingsSchema } = require("../../database/GuildSettingsSchema");
 
 module.exports = {
+    cooldown: 15,
     data: new SlashCommandBuilder()
         .setName("welcomesettings")
         .setDescription("Configure welcome messages for new members")

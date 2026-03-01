@@ -12,6 +12,7 @@ const { parseRange } = require("../../utils/rangeParser");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Moderation logs utilities: view logs with filters, edit reasons, or delete logs.",
     usage: "/mod_logs view [filters] | /mod_logs edit reason:<text> [lognumber|logrange] | /mod_logs delete [lognumber|logrange]",

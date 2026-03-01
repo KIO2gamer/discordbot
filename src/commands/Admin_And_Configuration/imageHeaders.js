@@ -3,6 +3,7 @@ const { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } = require("disc
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Posts a predefined image header to the channel. Useful for sending visual guides or announcements related to specific server sections (like welcome, rules, etc.).",
     usage: "/image_headers <options> [caption]",

@@ -54,6 +54,7 @@ async function handleChannelUpdate(channel, newName, permissionChoice, toggleCho
 }
 
 module.exports = {
+    cooldown: 15,
     description_full: "Modify channel settings including name and permissions.",
     usage: "/modifychannel <subcommand> <channel> [options]",
     examples: [

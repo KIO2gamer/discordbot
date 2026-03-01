@@ -8,6 +8,7 @@ const TicketStorage = require("../../database/ticketStorage");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 15,
     description_full: "View and manage ticket information, priority, and staff assignment",
     usage: "/ticket [action:info|priority|assign] [priority:level] [user:user]",
     examples: [

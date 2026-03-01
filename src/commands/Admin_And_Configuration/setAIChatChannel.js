@@ -9,6 +9,7 @@ const { handleError } = require("../../utils/errorHandler");
 const AIChatChannel = require("./../../database/AIChatChannel");
 
 module.exports = {
+    cooldown: 15,
     data: new SlashCommandBuilder()
         .setName("set_ai_chat_channel")
         .setDescription("Set the channel for AI chat interactions")

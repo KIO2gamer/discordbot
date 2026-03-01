@@ -8,6 +8,7 @@ const { LevelSchema } = require("../../database/xp_data");
 const Logger = require("../../utils/logger");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("xpboost")
         .setDescription("Manage XP boost events")

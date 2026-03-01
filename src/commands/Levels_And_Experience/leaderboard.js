@@ -4,6 +4,7 @@ const Logger = require("../../utils/logger");
 const { LevelSchema } = require("../../database/xp_data");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("leaderboard")
         .setDescription("View the server XP leaderboard")

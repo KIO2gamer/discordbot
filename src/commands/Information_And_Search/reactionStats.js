@@ -11,6 +11,7 @@ const COLORS = {
 };
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Displays statistics on reactions used in a specific channel or across the entire server. It shows the top 5 most used reactions and the top 5 users who react the most, within a specified timeframe or for the entire server history.",
     usage: "/reaction_stats [channel] [timeframe]",

@@ -131,6 +131,7 @@ const command = new SlashCommandBuilder()
     );
 
 module.exports = {
+    cooldown: 10,
     description_full: "Complete role management system",
     usage: "/role <subcommand> [options]",
     examples: [

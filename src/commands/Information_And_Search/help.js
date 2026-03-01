@@ -36,6 +36,7 @@ const COLORS = {
 const COMMAND_LINK_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName("help")
         .setDescription("Display comprehensive help information about commands")

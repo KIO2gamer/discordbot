@@ -3,6 +3,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 15,
     data: new SlashCommandBuilder()
         .setName("ask_gemini")
         .setDescription("Ask a single question to Gemini AI")

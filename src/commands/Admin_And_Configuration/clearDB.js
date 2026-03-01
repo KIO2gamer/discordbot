@@ -4,6 +4,7 @@ const { handleError } = require("./../../utils/errorHandler");
 const mongoose = require("mongoose");
 
 module.exports = {
+    cooldown: 30,
     data: new SlashCommandBuilder()
         .setName("clear_db")
         .setDescription("⚠️ DANGER: Wipes all database contents. Admin only.")

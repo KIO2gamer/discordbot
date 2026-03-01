@@ -3,6 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 5,
     description_full:
         "Displays the user's avatar (profile picture) with various options for size and format. You can get the avatar of another user by mentioning them.",
     usage: "/avatar [target:user] [size:pixels] [format:png/jpg/webp]",

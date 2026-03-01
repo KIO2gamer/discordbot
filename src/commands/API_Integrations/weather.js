@@ -3,6 +3,7 @@ const axios = require("axios");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Fetches and displays the current weather for a given city using the WeatherAPI. Information includes temperature, feels like temperature, humidity, wind, pressure, UV index, and more.",
     usage: "/weather <city>",

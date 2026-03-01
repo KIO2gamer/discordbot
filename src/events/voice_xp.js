@@ -1,6 +1,6 @@
 const { Events } = require("discord.js");
 const { LevelSchema } = require("../database/xp_data");
-const { GuildSettingsSchema } = require("../database/GuildSettingsSchema");
+const { getGuildSettings } = require("../utils/guildCache");
 const Logger = require("../utils/logger");
 
 // Voice XP settings
@@ -11,9 +11,15 @@ const MIN_VOICE_DURATION = 30000; // Minimum 30 seconds to count
 // Track voice sessions
 const voiceSessions = new Map();
 
-// Interval for awarding voice XP
+// Interval for awarding voice XP and cleaning up stale sessions
 setInterval(async () => {
     try {
+        // Remove sessions that have been active for over 24 hours (abnormal disconnect)
+        const staleThreshold = Date.now() - 24 * 60 * 60 * 1000;
+        for (const [key, session] of voiceSessions) {
+            if (session.joinedAt < staleThreshold) voiceSessions.delete(key);
+        }
+
         await awardVoiceXP();
     } catch (error) {
         Logger.log("VOICE_XP", `Error awarding voice XP: ${error.message}`, "error");
@@ -28,7 +34,7 @@ module.exports = {
 
         try {
             // Check if leveling is enabled
-            const guildSettings = await GuildSettingsSchema.findOne({ guildId });
+            const guildSettings = await getGuildSettings(guildId);
             if (!guildSettings || !guildSettings.leveling || !guildSettings.leveling.enabled) {
                 return;
             }
@@ -174,7 +180,7 @@ async function awardVoiceXP() {
 async function awardVoiceXPToUser(userId, guildId, minutes) {
     try {
         // Get guild settings for XP rate
-        const guildSettings = await GuildSettingsSchema.findOne({ guildId });
+        const guildSettings = await getGuildSettings(guildId);
         const xpRate = guildSettings?.leveling?.xpRate || 1.0;
 
         // Get user data for boost multiplier

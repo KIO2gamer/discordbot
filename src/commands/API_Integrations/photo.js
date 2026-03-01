@@ -2,6 +2,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Searches for and displays photos from Pexels based on your query. You can customize the number of photos, orientation, size, and even request a random photo.",
     usage: "/photo <query:search_term> [count:1-5] [orientation:landscape/portrait/square] [size:small/medium/large] [random:true/false]",

@@ -1,6 +1,7 @@
 const { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
+    cooldown: 5,
     description_full:
         "Displays a specific rule from the server’s rules list. The number of the rule to be displayed is specified as an argument.",
     usage: "/rule <number>",

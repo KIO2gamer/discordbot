@@ -1,12 +1,24 @@
 const { Events } = require("discord.js");
 const { LevelSchema } = require("../database/xp_data");
-const { GuildSettingsSchema } = require("../database/GuildSettingsSchema");
+const { getGuildSettings } = require("../utils/guildCache");
 const Logger = require("../utils/logger");
 
 // XP cooldown map to prevent spam
 const xpCooldowns = new Map();
 // Default cooldown in milliseconds (60 seconds)
 const DEFAULT_COOLDOWN = 60000;
+
+// Periodically evict expired cooldown entries to prevent unbounded Map growth
+setInterval(
+    () => {
+        const now = Date.now();
+        for (const [key, expiresAt] of xpCooldowns) {
+            if (expiresAt <= now) xpCooldowns.delete(key);
+        }
+    },
+    5 * 60 * 1000,
+); // sweep every 5 minutes
+
 // Base XP range for each message
 const XP_MIN = 15;
 const XP_MAX = 25;
@@ -19,9 +31,7 @@ module.exports = {
 
         try {
             // Check if leveling is enabled for this guild
-            const guildSettings = await GuildSettingsSchema.findOne({
-                guildId: message.guild.id,
-            });
+            const guildSettings = await getGuildSettings(message.guild.id);
 
             // If no settings or leveling disabled, return early
             if (!guildSettings || !guildSettings.leveling || !guildSettings.leveling.enabled)

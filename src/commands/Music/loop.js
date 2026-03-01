@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { useQueue, QueueRepeatMode } = require("discord-player");
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName("loop")
         .setDescription("Set loop mode for the queue")

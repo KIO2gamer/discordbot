@@ -8,6 +8,7 @@ const {
 } = require("../../utils/permissionFormatter");
 
 module.exports = {
+    cooldown: 5,
     description_full:
         "Provides detailed information about a specific channel, including its ID, type, creation date, topic, position, permissions, and more specialized details based on channel type.",
     usage: "/channel_info <channel>",

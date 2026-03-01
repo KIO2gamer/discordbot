@@ -4,6 +4,7 @@ const Logger = require("../../utils/logger");
 const { LevelSchema } = require("../../database/xp_data");
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName("level")
         .setDescription("View your or another user's level and XP")

@@ -2,6 +2,7 @@ const { PermissionFlagsBits, SlashCommandBuilder, MessageFlags } = require("disc
 const { handleError } = require("./../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full: "Fetches the embed data from a message URL.",
     usage: "/fetch_embed_data <url:message_url>",
     examples: [

@@ -5,6 +5,7 @@ const { handleError } = require("../../utils/errorHandler");
 const { success, error: errorEmbed, actionColor } = require("../../utils/moderationEmbeds");
 
 module.exports = {
+    cooldown: 5,
     description_full: "Bans a member from the server with the specified reason.",
     usage: '/ban target:@user [reason:"ban reason"]',
     examples: ["/ban target:@user123", '/ban target:@user123 reason:"Severe rule violation"'],

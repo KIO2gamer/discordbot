@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const Reminder = require("./../../database/reminderStorage");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("reminder")
         .setDescription("Set a reminder after a specified time")

@@ -3,6 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 5,
     description_full:
         "Shows detailed information about emojis in the server, including name, ID, creation date, usage stats, and more. Can display info for a specific emoji or list all server emojis.",
     usage: "/emoji_info [emoji]",

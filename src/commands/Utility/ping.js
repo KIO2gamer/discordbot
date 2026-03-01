@@ -11,6 +11,7 @@ const { handleError } = require("../../utils/errorHandler");
 const { formatUptime } = require("../../utils/formatUptime");
 
 module.exports = {
+    cooldown: 5,
     description_full:
         "Displays comprehensive bot health metrics including response times, WebSocket heartbeat, database connectivity, memory usage, and system information with real-time monitoring capabilities.",
     usage: "/ping",

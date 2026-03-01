@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { useQueue } = require("discord-player");
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder().setName("skip").setDescription("Skip the current song"),
 
     async execute(interaction) {

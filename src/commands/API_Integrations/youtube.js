@@ -11,6 +11,7 @@ const { google } = require("googleapis");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "YouTube tools: view channel statistics or search videos. Consolidates /ytstats and /youtube_search into one command.",
     usage: "/youtube stats <channel> | /youtube search <query> [filters]",

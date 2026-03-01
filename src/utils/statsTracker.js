@@ -9,12 +9,16 @@ class StatsTracker {
         this.commandCount = 0;
         this.startTime = Date.now();
 
+        // In-memory buffers – flushed to DB in bulk every 30 seconds
+        this.commandStatsBatch = [];
+        this.activityBatch = [];
+
         // Start periodic stats collection
         this.startStatsCollection();
     }
 
     startStatsCollection() {
-        // Collect stats every 5 minutes
+        // Collect bot-health stats every 5 minutes
         setInterval(
             async () => {
                 await this.collectBotStats();
@@ -22,10 +26,35 @@ class StatsTracker {
             5 * 60 * 1000,
         );
 
+        // Flush command/activity batches every 30 seconds
+        setInterval(async () => {
+            await this.flushBatches();
+        }, 30 * 1000);
+
         // Initial collection after 30 seconds
         setTimeout(async () => {
             await this.collectBotStats();
         }, 30000);
+    }
+
+    /** Bulk-write buffered command stats and user activity to the database. */
+    async flushBatches() {
+        try {
+            if (this.commandStatsBatch.length > 0) {
+                const docs = this.commandStatsBatch.splice(0);
+                await CommandStats.insertMany(docs, { ordered: false }).catch((err) =>
+                    Logger.error("Error flushing command stats batch:", err),
+                );
+            }
+            if (this.activityBatch.length > 0) {
+                const docs = this.activityBatch.splice(0);
+                await UserActivity.insertMany(docs, { ordered: false }).catch((err) =>
+                    Logger.error("Error flushing activity batch:", err),
+                );
+            }
+        } catch (error) {
+            Logger.error("Error in flushBatches:", error);
+        }
     }
 
     async collectBotStats() {
@@ -67,7 +96,7 @@ class StatsTracker {
         try {
             this.commandCount++;
 
-            const commandStat = new CommandStats({
+            this.commandStatsBatch.push({
                 commandName,
                 guildId: guild?.id || "DM",
                 userId: user.id,
@@ -76,8 +105,6 @@ class StatsTracker {
                 executionTime,
                 errorMessage,
             });
-
-            await commandStat.save();
 
             // Also track as user activity
             await this.trackUserActivity(
@@ -96,7 +123,7 @@ class StatsTracker {
         try {
             if (!guild) return; // Skip DM activities for now
 
-            const activity = new UserActivity({
+            this.activityBatch.push({
                 userId: user.id,
                 username: user.username,
                 discriminator: user.discriminator,
@@ -106,8 +133,6 @@ class StatsTracker {
                 commandName,
                 details,
             });
-
-            await activity.save();
         } catch (error) {
             Logger.error("Error tracking user activity:", error);
         }

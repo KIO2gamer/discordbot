@@ -14,6 +14,7 @@ const {
 // removed unused checkRolePermissions helper
 
 module.exports = {
+    cooldown: 5,
     description_full: "Issues a warning to a member and logs it in the moderation system.",
     usage: '/warn target:@user reason:"warn reason"',
     examples: [

@@ -6,6 +6,7 @@ const { success, error: errorEmbed, actionColor } = require("../../utils/moderat
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 5,
     description_full: "Temporarily bans a member for the specified duration and reason.",
     usage: '/temp_ban target:@user duration:"duration" [reason:"ban reason"]',
     examples: [

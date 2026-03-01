@@ -11,6 +11,7 @@ const EMBED_COLOR = "#2ECC71"; // A more visually appealing color for embeds
 const ERROR_COLOR = "#E74C3C"; // Color for error embeds
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Retrieves general information about a Minecraft player using Mojang's API (UUID lookup) and Crafatar (skin render).",
     usage: "/minecraft <username>",

@@ -11,6 +11,7 @@ const GOOGLE_COLORS = {
 const MAX_RESULTS = 3; // Reduced for cleaner output
 
 module.exports = {
+    cooldown: 10,
     description_full: "Searches Google and shows the top results in a clean format",
     usage: "/google <query>",
     examples: ["/google discord.js guide", "/google how to make pasta"],

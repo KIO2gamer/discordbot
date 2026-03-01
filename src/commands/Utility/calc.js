@@ -18,6 +18,7 @@ const { renderLatexToPng } = require("../../utils/renderLatex");
 const MATH_BUILTINS = new Set(Object.keys(math));
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName("calculate")
         .setDescription("Perform a calculation using mathjs.")

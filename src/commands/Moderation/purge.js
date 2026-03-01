@@ -3,6 +3,7 @@ const { success, error: errorEmbed } = require("../../utils/moderationEmbeds");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Deletes a specified number of messages from the channel. Messages must be less than 14 days old.",
     usage: "/purge amount:number [user:@user]",

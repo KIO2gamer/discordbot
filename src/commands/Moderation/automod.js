@@ -7,6 +7,7 @@ const {
 const AutoModConfig = require("../../database/autoModConfig");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("automod")
         .setDescription("Configure auto-moderation settings")

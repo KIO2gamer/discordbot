@@ -1,6 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
+    cooldown: 5,
     description_full: "An exciting game of Rock, Paper, Scissors, Lizard, Spock against the bot!",
     usage: "/rpsls <choice>",
     examples: ["/rpsls rock", "/rpsls paper", "/rpsls scissors", "/rpsls lizard", "/rpsls spock"],

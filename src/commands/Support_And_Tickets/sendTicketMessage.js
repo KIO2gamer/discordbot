@@ -14,6 +14,7 @@ const TicketConfig = require("./../../database/ticketConfig");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 30,
     description_full: "Creates a message with a button for users to open tickets",
     usage: "/send_ticket_message channel:#channel title:text description:text button_text:text",
     examples: [

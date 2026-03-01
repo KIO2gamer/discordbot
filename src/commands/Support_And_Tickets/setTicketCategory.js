@@ -11,6 +11,7 @@ const TicketConfig = require("./../../database/ticketConfig");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 15,
     description_full:
         "Configure ticket system settings (category, support role, max tickets, etc.)",
     usage: "/set_ticket_category category:category [support_role:role] [max_tickets:number]",

@@ -9,6 +9,7 @@ const {
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Shows an embed acknowledging and listing the contributors who helped create the bot, linking their Discord usernames to their IDs.",
     usage: "/credits",

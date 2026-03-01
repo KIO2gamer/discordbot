@@ -6,6 +6,7 @@ const { success, error: errorEmbed } = require("../../utils/moderationEmbeds");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 5,
     description_full: "Timeouts a member for the specified duration and reason.",
     usage: '/timeout target:@user amount:"duration" [reason:"timeout reason"]',
     examples: [

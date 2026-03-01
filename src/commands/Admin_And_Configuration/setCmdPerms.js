@@ -9,6 +9,7 @@ const { handleError } = require("../../utils/errorHandler");
 const CommandPermissionsSchema = require("./../../database/commandPermissions");
 
 module.exports = {
+    cooldown: 15,
     data: new SlashCommandBuilder()
         .setName("set_cmd_perms")
         .setDescription("Set permissions for commands")

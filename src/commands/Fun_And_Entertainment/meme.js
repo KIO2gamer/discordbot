@@ -11,6 +11,7 @@ const MEME_CONFIG = {
 };
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Get ready to laugh! This command fetches and displays a random, SFW meme from the vast expanse of the internet.",
     usage: "/meme",

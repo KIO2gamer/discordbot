@@ -280,6 +280,7 @@ function getRolesText(member) {
 }
 
 module.exports = {
+    cooldown: 5,
     description_full:
         "Shows detailed information about a user, including their profile, status, activities, roles, permissions and more.",
     usage: "/user_info [target]",

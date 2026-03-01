@@ -29,6 +29,7 @@ const questionCache = {
 };
 
 module.exports = {
+    cooldown: 10,
     description_full: "Tests your knowledge with a multiple-choice trivia question.",
     usage: "/trivia",
     examples: ["/trivia"],

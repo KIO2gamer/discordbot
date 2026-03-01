@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { useMainPlayer } = require("discord-player");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("play")
         .setDescription("Play a song or playlist")

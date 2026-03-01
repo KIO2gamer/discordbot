@@ -34,6 +34,7 @@ const LANGUAGES = [
 const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map((lang) => [lang.value, lang]));
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Translates your text to any language with an interactive menu. Simply enter your text and select the target language from a dropdown menu. The bot will auto-detect the source language and show you the translation with language information.",
     usage: "/translate <text>",

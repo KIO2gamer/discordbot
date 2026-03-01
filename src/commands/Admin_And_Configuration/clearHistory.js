@@ -4,6 +4,7 @@ const ChatHistory = require("./../../database/ChatHistory");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 15,
     data: new SlashCommandBuilder()
         .setName("clear_history")
         .setDescription("Clears your AI chat history")

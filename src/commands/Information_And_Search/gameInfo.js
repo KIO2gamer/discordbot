@@ -23,6 +23,7 @@ const steamAppListCache = {
 };
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Get detailed information about video games from Steam, including release date, ratings, platforms, genres, pricing, and more. Powered by Steam Store API.",
     usage: "/game_info <title>",

@@ -3,6 +3,7 @@ const { PermissionFlagsBits, SlashCommandBuilder, MessageFlags } = require("disc
 const Logger = require("../../utils/logger");
 
 module.exports = {
+    cooldown: 15,
     data: new SlashCommandBuilder()
         .setName("setlogchannel")
         .setDescription("Set the channel for bot logging")

@@ -10,6 +10,7 @@ const path = require("path");
 const fs = require("fs");
 
 module.exports = {
+    cooldown: 30,
     description_full:
         "Reloads bot commands without restarting. Can reload a specific command or all commands.",
     usage: "/reload [command:command_name]",

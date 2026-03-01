@@ -11,6 +11,20 @@ module.exports = {
             interaction.client.commandCooldowns = new Map();
         }
 
+        // Start a one-time periodic sweep to evict expired cooldown entries
+        if (!interaction.client._cooldownSweepStarted) {
+            interaction.client._cooldownSweepStarted = true;
+            setInterval(
+                () => {
+                    const now = Date.now();
+                    for (const [key, expiresAt] of interaction.client.commandCooldowns) {
+                        if (expiresAt <= now) interaction.client.commandCooldowns.delete(key);
+                    }
+                },
+                10 * 60 * 1000,
+            ); // sweep every 10 minutes
+        }
+
         // Handle slash commands
         if (interaction.isChatInputCommand()) {
             const command = interaction.client.commands.get(interaction.commandName);

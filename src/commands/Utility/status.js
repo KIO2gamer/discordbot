@@ -56,6 +56,7 @@ function formatBytes(bytes) {
 }
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Check the status of a server or service by providing a URL. This command will return detailed information such as the status code, content type, server details, response time, and more.",
     usage: "/status <url>",

@@ -4,6 +4,7 @@ const { handleError } = require("../../utils/errorHandler");
 const { success, error: errorEmbed, actionColor } = require("../../utils/moderationEmbeds");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "This command locks a specified text or announcement channel, preventing users from sending messages in it. If no channel is specified, it will lock the channel the command is used in.",
     usage: "/lock <channel>",

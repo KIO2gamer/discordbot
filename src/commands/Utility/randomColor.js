@@ -11,6 +11,7 @@ const { EmbedBuilder, MessageFlags, SlashCommandBuilder } = require("discord.js"
  */
 
 module.exports = {
+    cooldown: 5,
     description_full: "Generates a random color and displays it along with its hexadecimal code.",
     usage: "/random_color",
     examples: ["/random_color"],

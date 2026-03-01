@@ -4,6 +4,7 @@ const Logger = require("../../utils/logger");
 const { GuildSettingsSchema } = require("../../database/GuildSettingsSchema");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("levelsettings")
         .setDescription("Configure the leveling system for this server")

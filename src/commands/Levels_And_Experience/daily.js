@@ -8,6 +8,7 @@ const STREAK_BONUS_XP = 25; // Additional XP per day of streak
 const MAX_STREAK_BONUS = 250; // Cap at 10 days worth of bonus
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("daily")
         .setDescription("Claim your daily XP bonus and maintain your streak!"),

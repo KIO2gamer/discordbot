@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
-const AutoModConfig = require("../database/autoModConfig");
+const { getAutoModConfig } = require("../utils/guildCache");
 const Logger = require("../utils/logger");
 
 // Track user message history for spam detection
@@ -39,7 +39,7 @@ module.exports = {
 
         try {
             // Get auto-mod config
-            const config = await AutoModConfig.findOne({ guildId: message.guild.id });
+            const config = await getAutoModConfig(message.guild.id);
 
             if (!config || !config.enabled) return;
 
@@ -419,7 +419,7 @@ async function deleteRecentMessages(message, messages) {
 // Anti-raid detection (for member join events)
 async function checkAntiRaid(member) {
     try {
-        const config = await AutoModConfig.findOne({ guildId: member.guild.id });
+        const config = await getAutoModConfig(member.guild.id);
 
         if (!config || !config.enabled || !config.antiRaid.enabled) return;
 

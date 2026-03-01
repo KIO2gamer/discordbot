@@ -7,6 +7,7 @@ const {
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 30,
     description_full: "Creates a new channel in the server with specified settings.",
     usage: "/new_channel name:channel-name type:text/voice [category:category] [topic:description]",
     examples: [

@@ -4,6 +4,7 @@ const { handleError } = require("../../utils/errorHandler");
 const axios = require("axios");
 
 module.exports = {
+    cooldown: 5,
     description_full: "Various fun commands combined into one with subcommands.",
     usage: "/fun <subcommand> [user:@user]",
     examples: [

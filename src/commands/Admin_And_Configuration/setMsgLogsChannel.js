@@ -10,6 +10,7 @@ const MsgLogsConfig = require("./../../database/msgLogsConfig");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 15,
     description_full:
         'Sets which channel each message-log event will be sent to. Requires the "Administrator" permission.',
     usage: "/set_msg_logs_channel <event:string> <channel:channel>",

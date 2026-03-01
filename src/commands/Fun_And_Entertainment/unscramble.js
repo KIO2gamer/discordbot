@@ -12,6 +12,7 @@ const TIME_UP_EMOJI = "⏰";
 const GAME_OVER_EMOJI = "🏁";
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("unscramble")
         .setDescription("Start a multiplayer word unscramble game!"),

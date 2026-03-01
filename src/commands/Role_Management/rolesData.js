@@ -8,6 +8,7 @@ const { handleError } = require("../../utils/errorHandler.js");
 const RoleModel = require("./../../database/roleStorage.js");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Manage roles stored in the database (add, view, edit, delete) via one command.",
     usage: "/roles_data <add|view|edit|delete> ...",

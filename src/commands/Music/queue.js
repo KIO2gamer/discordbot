@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { useQueue } = require("discord-player");
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder().setName("queue").setDescription("Show the current music queue"),
 
     async execute(interaction) {

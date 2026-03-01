@@ -9,6 +9,7 @@ const {
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 5,
     description_full:
         'Echoes the provided text back to you. Optionally, send the echo to a specific channel and choose whether to format it as an embed. Requires the "Manage Channels" permission to prevent misuse.',
     usage: "/echo <input:text_to_echo> <channel:channel> [embed:true/false]",

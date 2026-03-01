@@ -15,6 +15,7 @@ const Logger = require("../../utils/logger");
 const COMMANDS_PER_PAGE = 10;
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("custom")
         .setDescription("Manage and use custom commands")

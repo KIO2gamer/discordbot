@@ -69,6 +69,7 @@ const GENRES_KEYWORDS = [
 // Main Command Export
 // ============================================================
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("lyricwhiz")
         .setDescription("Play a lyric fill-in-the-blanks guessing game!")

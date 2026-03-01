@@ -11,6 +11,7 @@ const COLORS = {
 };
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName("server")
         .setDescription("Displays server information and statistics")

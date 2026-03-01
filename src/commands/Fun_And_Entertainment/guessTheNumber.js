@@ -3,6 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "The bot chooses a random number between 1 and 100. The user has 7 tries to guess it.",
     usage: "/guess_the_number",

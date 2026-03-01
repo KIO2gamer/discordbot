@@ -4,6 +4,7 @@ const { handleError } = require("../../utils/errorHandler");
 const { getChannelType } = require("../../utils/channelTypes");
 
 module.exports = {
+    cooldown: 30,
     description_full:
         "This command permanently deletes a specified channel from the server. Please use caution as this action is irreversible.",
     usage: "/delete_channel [channel]",

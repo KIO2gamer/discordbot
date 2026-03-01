@@ -13,6 +13,7 @@ const COLORS = {
 };
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Displays detailed information about the bot, including version, uptime, system statistics, and more.",
     usage: "/bot_info",

@@ -5,6 +5,7 @@ const { handleError } = require("../../utils/errorHandler");
 const moderationLogs = require("./../../database/moderationLogs");
 
 module.exports = {
+    cooldown: 5,
     description_full: "Unbans a member from the server with the specified reason.",
     usage: '/unban user:"user ID or unique username" [reason:"unban reason"]',
     examples: [

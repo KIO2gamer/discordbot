@@ -4,6 +4,7 @@ const axios = require("axios");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName("dictionary")
         .setDescription("Look up the definition of a word")

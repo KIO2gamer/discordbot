@@ -32,6 +32,7 @@ const LETTERS_A_M = "ABCDEFGHIJKLM".split("");
 const LETTERS_N_Z = "NOPQRSTUVWXYZ".split("");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Play hangman with interactive buttons. Anyone in the channel can participate!",
     usage: "/hangman",

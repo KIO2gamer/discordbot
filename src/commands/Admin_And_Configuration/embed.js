@@ -26,6 +26,7 @@ const COLOR_PRESETS = {
 };
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "Creates and sends a fully customizable embed message to the current or specified channel.",
     usage: "/embed create title:<title> description:<description> [channel:] [color:] [fields:] [footer:] [image:] [thumbnail:]",

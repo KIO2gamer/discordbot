@@ -2,6 +2,7 @@ const { SlashCommandBuilder, MessageFlags, PollLayoutType, EmbedBuilder } = requ
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {
+    cooldown: 15,
     description_full: "Poll utilities: create a poll, end a poll, or fetch current/final results.",
     usage: "/poll create question:<text> answers:<comma-separated> [multi_select] [duration] | /poll end message_id:<id> channel:<channel> | /poll fetch message_id:<id> channel:<channel>",
     examples: [

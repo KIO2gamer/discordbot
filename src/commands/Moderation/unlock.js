@@ -4,6 +4,7 @@ const { handleError } = require("../../utils/errorHandler");
 const { success, error: errorEmbed, actionColor } = require("../../utils/moderationEmbeds");
 
 module.exports = {
+    cooldown: 10,
     description_full:
         "This command unlocks a specified channel or the current channel if no channel is specified.",
     usage: "/unlock <channel?>",
