@@ -4,7 +4,6 @@ const path = require("path");
 const fs = require("fs");
 const { REST, Routes, Client, Collection, GatewayIntentBits } = require("discord.js");
 const { Player } = require("discord-player");
-const { DefaultExtractors } = require("@discord-player/extractor");
 const Logger = require("./utils/logger");
 require("./utils/slowBufferCompat");
 
@@ -12,6 +11,10 @@ const CommandPermissions = require("./database/commandPermissions");
 const OAuth2Handler = require("./features/youtube-subscriber-roles/utils/oauth2Handler");
 const StatsTracker = require("./utils/statsTracker");
 const StatusRotator = require("./utils/statusRotator");
+const CommandRegistry = require("./utils/commandRegistry");
+const CommandExecutor = require("./utils/commandExecutor");
+const CommandMonitor = require("./utils/commandMonitor");
+const CommandCache = require("./utils/commandCache");
 
 // Client-related functions
 /**
@@ -29,8 +32,10 @@ function createClient() {
         ],
     });
 
-    // Initialize collections
+    // Initialize collections and new command management systems
     client.commands = new Collection();
+    client.commandRegistry = new CommandRegistry();
+    client.commandCache = new CommandCache(5 * 60 * 1000); // 5-minute TTL
     client.cooldowns = new Collection();
     client.categories = new Collection();
 
@@ -42,10 +47,18 @@ function createClient() {
         },
     });
 
-    // Load extractors
-    player.extractors.loadMulti(DefaultExtractors).catch((error) => {
-        Logger.error(`Failed to load music extractors: ${error.message}`);
-    });
+    // Load extractors using the discord-player v6 API
+    player.extractors
+        .loadDefault()
+        .then((result) => {
+            if (!result?.success) {
+                const message = result?.error?.message || "Unknown error";
+                Logger.error(`Failed to load music extractors: ${message}`);
+            }
+        })
+        .catch((error) => {
+            Logger.error(`Failed to load music extractors: ${error.message}`);
+        });
 
     return client;
 }
@@ -103,7 +116,6 @@ function loadCommands(client, commandsPath) {
 
                 // Allow opt-out of registration for helper-only command modules
                 if (command.disabled === true) {
-                    Logger.warn(`Skipping disabled command: ${filePath}`);
                     continue;
                 }
 
@@ -112,7 +124,10 @@ function loadCommands(client, commandsPath) {
                     command.category = folder.toLowerCase();
                     command.filePath = filePath;
 
+                    // Register with both old and new systems
                     client.commands.set(command.data.name, command);
+                    client.commandRegistry.register(command, folder.toLowerCase());
+
                     commandCount++;
                     folderCommandCount++;
                 } else {
@@ -123,10 +138,6 @@ function loadCommands(client, commandsPath) {
             } catch (error) {
                 Logger.error(`Failed to load command ${filePath}: ${error.message}`);
             }
-        }
-
-        if (folderCommandCount > 0) {
-            Logger.log("COMMANDS", `Loaded ${folderCommandCount} commands from ${folder}`);
         }
     }
 
@@ -197,7 +208,6 @@ const config = {
 const connectToMongoDB = async () => {
     Logger.log("DATABASE", "Connecting to MongoDB...");
     try {
-        mongoose.set("strictQuery", false);
         await mongoose.connect(config.mongoUri);
         Logger.success("Connected to MongoDB");
     } catch (error) {
@@ -209,13 +219,7 @@ const connectToMongoDB = async () => {
 // Deploy commands to Discord API
 const deployCommands = async (client) => {
     Logger.log("DEPLOY", "Deploying commands...");
-    const commands = [];
-
-    client.commands.forEach((command) => {
-        if (command?.data?.toJSON) {
-            commands.push(command.data.toJSON());
-        }
-    });
+    const commands = client.commandRegistry.toJSON();
 
     const rest = new REST({ version: "10" }).setToken(config.token);
     try {
@@ -314,7 +318,6 @@ const initializeBot = async () => {
         console.log("\n");
 
         Logger.log("BOT", "Initializing bot components...", "info");
-        console.log("");
 
         // Create client
         Logger.log("BOT", "→ Creating Discord client...", "info");
@@ -324,9 +327,6 @@ const initializeBot = async () => {
         // Connect to database
         Logger.log("DATABASE", "→ Connecting to MongoDB...", "info");
         await connectToMongoDB();
-        console.log("");
-
-        console.log("");
 
         // Start OAuth2 callback server if configured for local development
         Logger.log("BOT", "→ Checking OAuth2 configuration...", "info");
@@ -356,20 +356,15 @@ const initializeBot = async () => {
         } else {
             Logger.warn("⚠ OAuth2 not configured - YouTube subscriber roles will not work");
         }
-        console.log("");
-
-        console.log("");
 
         // Load commands and events
         Logger.log("BOT", "→ Loading commands and events...", "info");
         loadCommands(client, path.join(__dirname, "./commands"));
         loadEvents(client, path.join(__dirname, "./events"));
-        console.log("");
 
         // Load command permissions
         Logger.log("BOT", "→ Loading command permissions...", "info");
         await loadCommandPermissions(client);
-        console.log("");
 
         // Deploy commands
         Logger.log("DEPLOY", "→ Deploying slash commands...", "info");
@@ -400,7 +395,35 @@ const initializeBot = async () => {
         Logger.log("BOT", "→ Initializing stats tracker...", "info");
         client.statsTracker = new StatsTracker(client);
         Logger.success("✓ Stats tracker initialized");
-        console.log("");
+
+        // Initialize command monitor
+        Logger.log("BOT", "→ Initializing command monitor...", "info");
+        client.commandMonitor = new CommandMonitor(client.commandRegistry);
+        Logger.success("✓ Command monitor initialized");
+
+        // Periodic cooldown cleanup (every 5 minutes)
+        setInterval(
+            () => {
+                const before = client.cooldowns.size;
+                CommandExecutor.cleanupCooldowns(client);
+                const after = client.cooldowns.size;
+                if (before !== after) {
+                    Logger.log("CLEANUP", `Cleaned up ${before - after} expired cooldowns`);
+                }
+            },
+            5 * 60 * 1000,
+        );
+
+        // Periodic cache cleanup (every 10 minutes)
+        setInterval(
+            () => {
+                const removed = client.commandCache.cleanup();
+                if (removed > 0) {
+                    Logger.log("CLEANUP", `Cleaned up ${removed} expired cache entries`);
+                }
+            },
+            10 * 60 * 1000,
+        );
 
         // Setup graceful shutdown
         setupGracefulShutdown(client);
@@ -417,6 +440,7 @@ const initializeBot = async () => {
                 Commands: client.commands.size.toString(),
                 Channels: client.channels.cache.size.toString(),
                 Users: client.users.cache.size.toString(),
+                "Registry Size": client.commandRegistry.size.toString(),
             },
             "📈 Bot Statistics",
         );
