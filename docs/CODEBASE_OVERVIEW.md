@@ -393,7 +393,6 @@ npm run format          # Format with Prettier
 -   [Auto-Moderation](AUTO_MODERATION.md) - Moderation system details
 -   [Logging System](LOGGING_SYSTEM.md) - Logging configuration
 -   [YouTube Subscriber Roles](youtube-subscriber-roles/YOUTUBE_SUBSCRIBER_ROLES_SETUP.md) - Feature setup
--   [Organization Summary](ORGANIZATION_SUMMARY.md) - Refactoring details
 
 ## 📊 Statistics
 

@@ -3,7 +3,7 @@
  * This template includes all best practices and available options
  */
 
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const { handleError } = require("../../utils/errorHandler");
 
 module.exports = {

@@ -44,10 +44,9 @@ Complete guide to all available documentation for Project Kiyo Discord Bot.
 
 #### Reference Guides
 
-| Document                                                | Purpose                                | When to Read          |
-| ------------------------------------------------------- | -------------------------------------- | --------------------- |
-| [COMMANDS_REFERENCE.md](docs/COMMANDS_REFERENCE.md)     | Quick lookup for all 100 commands      | Using the bot         |
-| [ORGANIZATION_SUMMARY.md](docs/ORGANIZATION_SUMMARY.md) | Refactoring and reorganization details | Understanding changes |
+| Document                                            | Purpose                           | When to Read  |
+| --------------------------------------------------- | --------------------------------- | ------------- |
+| [COMMANDS_REFERENCE.md](docs/COMMANDS_REFERENCE.md) | Quick lookup for all 100 commands | Using the bot |
 
 #### Feature Documentation
 
@@ -282,7 +281,6 @@ project-kiyo/
 │   ├── CODEBASE_OVERVIEW.md                # Architecture
 │   ├── COMMANDS_REFERENCE.md               # Command lookup
 │   ├── PROJECT_STRUCTURE.md                # File organization
-│   ├── ORGANIZATION_SUMMARY.md             # Refactoring
 │   ├── AUTO_MODERATION.md                  # Moderation guide
 │   ├── AUTO_MODERATION_ARCHITECTURE.md     # Moderation deep-dive
 │   ├── AUTO_MODERATION_QUICK_REFERENCE.md # Moderation quick ref
