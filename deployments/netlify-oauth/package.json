@@ -8,11 +8,11 @@
         "dev": "netlify dev"
     },
     "dependencies": {
-        "axios": "^1.6.2",
-        "mongoose": "^8.7.1"
+        "axios": "^1.15.2",
+        "mongoose": "^8.22.1"
     },
     "devDependencies": {
-        "netlify-cli": "^17.38.1"
+        "netlify-cli": "^26.0.2"
     },
     "overrides": {
         "http-proxy-middleware": "^3.0.5"
